@@ -7,24 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D20615032278D913000B5FB8 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D20615022278D913000B5FB8 /* GLKit.framework */; };
 		D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D230958E2261FCDB00A657C3 /* AppDelegate.m */; };
-		D23095922261FCDB00A657C3 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23095912261FCDB00A657C3 /* ViewController.m */; };
+		D23095922261FCDB00A657C3 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D23095912261FCDB00A657C3 /* ViewController.mm */; };
 		D23095942261FCDC00A657C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D23095932261FCDC00A657C3 /* Assets.xcassets */; };
 		D23095972261FCDC00A657C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D23095952261FCDC00A657C3 /* Main.storyboard */; };
 		D230959A2261FCDC00A657C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D23095992261FCDC00A657C3 /* main.m */; };
+		D23095A52261FCFB00A657C3 /* raster3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23095A22261FCFB00A657C3 /* raster3d.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		D230958A2261FCDB00A657C3 /* CPURaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CPURaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D20615022278D913000B5FB8 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		D230958A2261FCDB00A657C3 /* SimpleCPURaster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleCPURaster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D230958D2261FCDB00A657C3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		D230958E2261FCDB00A657C3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		D23095902261FCDB00A657C3 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		D23095912261FCDB00A657C3 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		D23095912261FCDB00A657C3 /* ViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ViewController.mm; sourceTree = "<group>"; };
 		D23095932261FCDC00A657C3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D23095962261FCDC00A657C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D23095982261FCDC00A657C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D23095992261FCDC00A657C3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D230959B2261FCDC00A657C3 /* CPURaster.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CPURaster.entitlements; sourceTree = "<group>"; };
+		D23095A22261FCFB00A657C3 /* raster3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = raster3d.cpp; sourceTree = "<group>"; };
+		D23095A32261FCFB00A657C3 /* cow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cow.h; sourceTree = "<group>"; };
+		D23095A42261FCFB00A657C3 /* math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
+		D23095A7226205B500A657C3 /* framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = framebuffer.hpp; sourceTree = "<group>"; };
+		D23095B42265DE5A00A657C3 /* raster.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raster.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,50 +40,73 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D20615032278D913000B5FB8 /* GLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D20615012278D913000B5FB8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D20615022278D913000B5FB8 /* GLKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D23095812261FCDB00A657C3 = {
 			isa = PBXGroup;
 			children = (
-				D230958C2261FCDB00A657C3 /* CPURaster */,
+				D230958C2261FCDB00A657C3 /* SimpleCPURaster */,
 				D230958B2261FCDB00A657C3 /* Products */,
+				D20615012278D913000B5FB8 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
 		D230958B2261FCDB00A657C3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D230958A2261FCDB00A657C3 /* CPURaster.app */,
+				D230958A2261FCDB00A657C3 /* SimpleCPURaster.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		D230958C2261FCDB00A657C3 /* CPURaster */ = {
+		D230958C2261FCDB00A657C3 /* SimpleCPURaster */ = {
 			isa = PBXGroup;
 			children = (
 				D230958D2261FCDB00A657C3 /* AppDelegate.h */,
 				D230958E2261FCDB00A657C3 /* AppDelegate.m */,
 				D23095902261FCDB00A657C3 /* ViewController.h */,
-				D23095912261FCDB00A657C3 /* ViewController.m */,
+				D23095912261FCDB00A657C3 /* ViewController.mm */,
+				D23095A12261FCFB00A657C3 /* raster */,
 				D23095932261FCDC00A657C3 /* Assets.xcassets */,
 				D23095952261FCDC00A657C3 /* Main.storyboard */,
 				D23095982261FCDC00A657C3 /* Info.plist */,
 				D23095992261FCDC00A657C3 /* main.m */,
 				D230959B2261FCDC00A657C3 /* CPURaster.entitlements */,
 			);
-			path = CPURaster;
+			path = SimpleCPURaster;
+			sourceTree = "<group>";
+		};
+		D23095A12261FCFB00A657C3 /* raster */ = {
+			isa = PBXGroup;
+			children = (
+				D23095A22261FCFB00A657C3 /* raster3d.cpp */,
+				D23095A7226205B500A657C3 /* framebuffer.hpp */,
+				D23095B42265DE5A00A657C3 /* raster.hpp */,
+				D23095A32261FCFB00A657C3 /* cow.h */,
+				D23095A42261FCFB00A657C3 /* math.h */,
+			);
+			path = raster;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		D23095892261FCDB00A657C3 /* CPURaster */ = {
+		D23095892261FCDB00A657C3 /* SimpleCPURaster */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = D230959E2261FCDC00A657C3 /* Build configuration list for PBXNativeTarget "CPURaster" */;
+			buildConfigurationList = D230959E2261FCDC00A657C3 /* Build configuration list for PBXNativeTarget "SimpleCPURaster" */;
 			buildPhases = (
 				D23095862261FCDB00A657C3 /* Sources */,
 				D23095872261FCDB00A657C3 /* Frameworks */,
@@ -85,9 +116,9 @@
 			);
 			dependencies = (
 			);
-			name = CPURaster;
+			name = SimpleCPURaster;
 			productName = CPURaster;
-			productReference = D230958A2261FCDB00A657C3 /* CPURaster.app */;
+			productReference = D230958A2261FCDB00A657C3 /* SimpleCPURaster.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -104,7 +135,7 @@
 					};
 				};
 			};
-			buildConfigurationList = D23095852261FCDB00A657C3 /* Build configuration list for PBXProject "CPURaster" */;
+			buildConfigurationList = D23095852261FCDB00A657C3 /* Build configuration list for PBXProject "SimpleCPURaster" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -117,7 +148,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D23095892261FCDB00A657C3 /* CPURaster */,
+				D23095892261FCDB00A657C3 /* SimpleCPURaster */,
 			);
 		};
 /* End PBXProject section */
@@ -139,7 +170,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D23095922261FCDB00A657C3 /* ViewController.m in Sources */,
+				D23095922261FCDB00A657C3 /* ViewController.mm in Sources */,
+				D23095A52261FCFB00A657C3 /* raster3d.cpp in Sources */,
 				D230959A2261FCDC00A657C3 /* main.m in Sources */,
 				D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */,
 			);
@@ -274,11 +306,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = CPURaster/CPURaster.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SimpleCPURaster/CPURaster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = DHKZ7WR43P;
-				INFOPLIST_FILE = CPURaster/Info.plist;
+				INFOPLIST_FILE = SimpleCPURaster/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -292,11 +324,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_ENTITLEMENTS = CPURaster/CPURaster.entitlements;
+				CODE_SIGN_ENTITLEMENTS = SimpleCPURaster/CPURaster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = DHKZ7WR43P;
-				INFOPLIST_FILE = CPURaster/Info.plist;
+				INFOPLIST_FILE = SimpleCPURaster/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -309,7 +341,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D23095852261FCDB00A657C3 /* Build configuration list for PBXProject "CPURaster" */ = {
+		D23095852261FCDB00A657C3 /* Build configuration list for PBXProject "SimpleCPURaster" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D230959C2261FCDC00A657C3 /* Debug */,
@@ -318,7 +350,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		D230959E2261FCDC00A657C3 /* Build configuration list for PBXNativeTarget "CPURaster" */ = {
+		D230959E2261FCDC00A657C3 /* Build configuration list for PBXNativeTarget "SimpleCPURaster" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				D230959F2261FCDC00A657C3 /* Debug */,

@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:CPURaster.xcodeproj">
+      location = "self:/Users/sakrist/Documents/projects/SimpleCPURaster/SimpleCPURaster.xcodeproj">
    </FileRef>
 </Workspace>
