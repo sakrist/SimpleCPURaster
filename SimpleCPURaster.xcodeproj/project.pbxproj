@@ -13,7 +13,6 @@
 		D23095942261FCDC00A657C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D23095932261FCDC00A657C3 /* Assets.xcassets */; };
 		D23095972261FCDC00A657C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D23095952261FCDC00A657C3 /* Main.storyboard */; };
 		D230959A2261FCDC00A657C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D23095992261FCDC00A657C3 /* main.m */; };
-		D23095A52261FCFB00A657C3 /* raster3d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23095A22261FCFB00A657C3 /* raster3d.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,7 +27,6 @@
 		D23095982261FCDC00A657C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D23095992261FCDC00A657C3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D230959B2261FCDC00A657C3 /* CPURaster.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CPURaster.entitlements; sourceTree = "<group>"; };
-		D23095A22261FCFB00A657C3 /* raster3d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = raster3d.cpp; sourceTree = "<group>"; };
 		D23095A32261FCFB00A657C3 /* cow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cow.h; sourceTree = "<group>"; };
 		D23095A42261FCFB00A657C3 /* math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
 		D23095A7226205B500A657C3 /* framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = framebuffer.hpp; sourceTree = "<group>"; };
@@ -92,7 +90,6 @@
 		D23095A12261FCFB00A657C3 /* raster */ = {
 			isa = PBXGroup;
 			children = (
-				D23095A22261FCFB00A657C3 /* raster3d.cpp */,
 				D23095A7226205B500A657C3 /* framebuffer.hpp */,
 				D23095B42265DE5A00A657C3 /* raster.hpp */,
 				D23095A32261FCFB00A657C3 /* cow.h */,
@@ -171,7 +168,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D23095922261FCDB00A657C3 /* ViewController.mm in Sources */,
-				D23095A52261FCFB00A657C3 /* raster3d.cpp in Sources */,
 				D230959A2261FCDC00A657C3 /* main.m in Sources */,
 				D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */,
 			);

@@ -15,7 +15,7 @@
 class Raster {
 
     typedef std::function<Vec3f (Vec3f vertex, Matrix44f projection)> VertexFunction;
-    typedef std::function<Vec3c (Vec3f vertex)> FragmentFunction;
+    typedef std::function<Vec3f (Vec3f vertex)> FragmentFunction;
     
 public:    
     
@@ -39,10 +39,10 @@ public:
         _framebuffer->clear();
     }
     
-    void _toRasterSpace(Vec3f *vertex) {
-        vertex->x = ((vertex->x - 1.0f) * 0.5f + 1.0) * p_fimageWidth;
-        vertex->y = (1.0f - (vertex->y + 1.0f) * 0.5f) * p_fimageHeight;
-        vertex->z = 1.0f / vertex->z;
+    void _toRasterSpace(Vec3f& vertex) {
+        vertex.x = (vertex.x * 0.5f + 0.5) * p_fimageWidth;
+        vertex.y = (vertex.y * 0.5f + 0.5f) * p_fimageHeight;
+        vertex.z = 1.0f / vertex.z;
     }
     
     void draw(Vec3f *vertices, uint32_t *indices, uint32_t primitivesCount) {
@@ -63,14 +63,19 @@ public:
             Vec3f v1Raster = _vertexFunction(v1, projection);
             Vec3f v2Raster = _vertexFunction(v2, projection);
             
-            _toRasterSpace(&v0Raster);
-            _toRasterSpace(&v1Raster);
-            _toRasterSpace(&v2Raster);
+            _toRasterSpace(v0Raster);
+            _toRasterSpace(v1Raster);
+            _toRasterSpace(v2Raster);
             
             if (isnan(v0Raster.z) || isnan(v1Raster.z) || isnan(v2Raster.z)) {
                 continue;
             }
             
+            if (v0Raster.z < 0.0 && v1Raster.z < 0.0 && v2Raster.z < 0.0) {
+                continue;
+            }
+            
+            // bound box
             float xmin = min3(v0Raster.x, v1Raster.x, v2Raster.x); 
             float ymin = min3(v0Raster.y, v1Raster.y, v2Raster.y); 
             float xmax = max3(v0Raster.x, v1Raster.x, v2Raster.x); 
@@ -107,7 +112,9 @@ public:
                             
                             pixelSample.z = z;
                             
-                            frameBuffer[y * imageWidth + x] = _fragmentFunction(pixelSample);
+                            Vec3f pixelSample(x + 0.5f, y + 0.5f, 0.0f);
+                            pixelSample = _fragmentFunction(pixelSample);
+                            frameBuffer[y * imageWidth + x] = Vec3c(pixelSample.x * 255.0, pixelSample.y * 255.0, pixelSample.z * 255.0);
                             
                         }
                     }

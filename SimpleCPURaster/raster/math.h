@@ -146,9 +146,29 @@ public:
  
         return tmp; 
     } 
+    
+    static Matrix44 perspective(float fovyRadians, float aspect, float nearZ, float farZ)
+    {
+        float ys = 1 / tanf(fovyRadians * 0.5);
+        float xs = ys / aspect;
+        float zs = farZ / (nearZ - farZ);
+        return Matrix44(xs, 0, 0, 0,
+                        0, ys, 0,  0,
+                        0, 0, zs, -1,
+                        0, 0, nearZ * zs, 0);
+    }
+    
+    static Matrix44 translation(float tx, float ty, float tz)
+    {
+        return Matrix44(1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        tx, ty, tz, 1);
+    }
+    
  
 // To make it easier to understand how a matrix multiplication works, the fragment of code included within the #if-#else statement, show how this works if you were to iterate over the coefficients of the resulting matrix (a). However you will often see this multiplication being done using the code contained within the #else-#end statement. It is exactly the same as the first fragment only we have litteraly written down as a series of operations what would actually result from executing the two for() loops contained in the first fragment. It is supposed to be faster, however considering matrix multiplicatin is not necessarily that common, this is probably not super useful nor really necessary (but nice to have -- and it gives you an example of how it can be done, as this how you will this operation implemented in most libraries).
-    static void multiply(const Matrix44<T> &a, const Matrix44& b, Matrix44 &c) 
+    static void multiply(const Matrix44<T> &a, const Matrix44<T>& b, Matrix44<T> &c) 
     { 
 #if 0 
         for (uint8_t i = 0; i < 4; ++i) { 
@@ -166,49 +186,29 @@ public:
         const T * __restrict bp = &b.x[0][0]; 
               T * __restrict cp = &c.x[0][0]; 
  
-        T a0, a1, a2, a3; 
- 
-        a0 = ap[0]; 
-        a1 = ap[1]; 
-        a2 = ap[2]; 
-        a3 = ap[3]; 
- 
-        cp[0]  = a0 * bp[0]  + a1 * bp[4]  + a2 * bp[8]  + a3 * bp[12]; 
-        cp[1]  = a0 * bp[1]  + a1 * bp[5]  + a2 * bp[9]  + a3 * bp[13]; 
-        cp[2]  = a0 * bp[2]  + a1 * bp[6]  + a2 * bp[10] + a3 * bp[14]; 
-        cp[3]  = a0 * bp[3]  + a1 * bp[7]  + a2 * bp[11] + a3 * bp[15]; 
- 
-        a0 = ap[4]; 
-        a1 = ap[5]; 
-        a2 = ap[6]; 
-        a3 = ap[7]; 
- 
-        cp[4]  = a0 * bp[0]  + a1 * bp[4]  + a2 * bp[8]  + a3 * bp[12]; 
-        cp[5]  = a0 * bp[1]  + a1 * bp[5]  + a2 * bp[9]  + a3 * bp[13]; 
-        cp[6]  = a0 * bp[2]  + a1 * bp[6]  + a2 * bp[10] + a3 * bp[14]; 
-        cp[7]  = a0 * bp[3]  + a1 * bp[7]  + a2 * bp[11] + a3 * bp[15]; 
- 
-        a0 = ap[8]; 
-        a1 = ap[9]; 
-        a2 = ap[10]; 
-        a3 = ap[11]; 
- 
-        cp[8]  = a0 * bp[0]  + a1 * bp[4]  + a2 * bp[8]  + a3 * bp[12]; 
-        cp[9]  = a0 * bp[1]  + a1 * bp[5]  + a2 * bp[9]  + a3 * bp[13]; 
-        cp[10] = a0 * bp[2]  + a1 * bp[6]  + a2 * bp[10] + a3 * bp[14]; 
-        cp[11] = a0 * bp[3]  + a1 * bp[7]  + a2 * bp[11] + a3 * bp[15]; 
- 
-        a0 = ap[12]; 
-        a1 = ap[13]; 
-        a2 = ap[14]; 
-        a3 = ap[15]; 
- 
-        cp[12] = a0 * bp[0]  + a1 * bp[4]  + a2 * bp[8]  + a3 * bp[12]; 
-        cp[13] = a0 * bp[1]  + a1 * bp[5]  + a2 * bp[9]  + a3 * bp[13]; 
-        cp[14] = a0 * bp[2]  + a1 * bp[6]  + a2 * bp[10] + a3 * bp[14]; 
-        cp[15] = a0 * bp[3]  + a1 * bp[7]  + a2 * bp[11] + a3 * bp[15]; 
+        cp[0]  = ap[0] * bp[0]  + ap[4] * bp[1]  + ap[8] * bp[2]   + ap[12] * bp[3];
+        cp[4]  = ap[0] * bp[4]  + ap[4] * bp[5]  + ap[8] * bp[6]   + ap[12] * bp[7];
+        cp[8]  = ap[0] * bp[8]  + ap[4] * bp[9]  + ap[8] * bp[10]  + ap[12] * bp[11];
+        cp[12] = ap[0] * bp[12] + ap[4] * bp[13] + ap[8] * bp[14]  + ap[12] * bp[15];
+        
+        cp[1]  = ap[1] * bp[0]  + ap[5] * bp[1]  + ap[9] * bp[2]   + ap[13] * bp[3];
+        cp[5]  = ap[1] * bp[4]  + ap[5] * bp[5]  + ap[9] * bp[6]   + ap[13] * bp[7];
+        cp[9]  = ap[1] * bp[8]  + ap[5] * bp[9]  + ap[9] * bp[10]  + ap[13] * bp[11];
+        cp[13] = ap[1] * bp[12] + ap[5] * bp[13] + ap[9] * bp[14]  + ap[13] * bp[15];
+        
+        cp[2]  = ap[2] * bp[0]  + ap[6] * bp[1]  + ap[10] * bp[2]  + ap[14] * bp[3];
+        cp[6]  = ap[2] * bp[4]  + ap[6] * bp[5]  + ap[10] * bp[6]  + ap[14] * bp[7];
+        cp[10] = ap[2] * bp[8]  + ap[6] * bp[9]  + ap[10] * bp[10] + ap[14] * bp[11];
+        cp[14] = ap[2] * bp[12] + ap[6] * bp[13] + ap[10] * bp[14] + ap[14] * bp[15];
+        
+        cp[3]  = ap[3] * bp[0]  + ap[7] * bp[1]  + ap[11] * bp[2]  + ap[15] * bp[3];
+        cp[7]  = ap[3] * bp[4]  + ap[7] * bp[5]  + ap[11] * bp[6]  + ap[15] * bp[7];
+        cp[11] = ap[3] * bp[8]  + ap[7] * bp[9]  + ap[11] * bp[10] + ap[15] * bp[11];
+        cp[15] = ap[3] * bp[12] + ap[7] * bp[13] + ap[11] * bp[14] + ap[15] * bp[15];
+        
 #endif 
     } 
+    
  
     // \brief return a transposed copy of the current matrix as a new matrix
     Matrix44 transposed() const 

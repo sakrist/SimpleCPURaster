@@ -33,19 +33,14 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     float _rotation;
 }
 
-- (GLKMatrix4)projectionMatrix {
+- (Matrix44f)projectionMatrix {
     float nearZ = 0.1; 
     float farZ = 1000;
-    float fovAngle = GLKMathDegreesToRadians(25);
+    float fovAngle = 65.0f * (M_PI / 180.0f);
     float aspect = fabs(self.view.frame.size.width / self.view.frame.size.height);
-    float nearHeight = 2.0 * nearZ * tanf(fovAngle/2.0);
-    float nearWidth = nearHeight * aspect;    
-    float left = -nearWidth * 0.5;
-    float right = nearWidth * 0.5;
-    float top = nearHeight * 0.5;
-    float bottom = -nearHeight * 0.5;
-    
-    return GLKMatrix4MakeFrustum(left, right, bottom, top, nearZ, farZ);
+     
+    Matrix44f matrix = Matrix44f().perspective(fovAngle, aspect, nearZ, farZ);
+    return matrix;
 }
 
 - (void)viewDidLoad {
@@ -54,54 +49,21 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     _raster = new Raster( [](Vec3f vertex, Matrix44f projection) -> Vec3f {
         Vec3f vertexOut = projection * vertex;
         return vertexOut;
-    } , [](Vec3f vertex) -> Vec3<unsigned char> {
-//        Vec3f n = vertex.normalize();
-        return Vec3c(0);
+    } , [](Vec3f vertex) -> Vec3f {
+        Vec3f n = vertex.normalize();        
+        return n;
     });
 
-    
-    _rotation = 0;
-    
-    _proj = {0.707107, -0.331295, 0.624695, 0, 
-        0, 0.883452, 0.468521, 0, 
-        -0.707107, -0.331295, 0.624695, 0, 
-        -1.63871, -5.747777, -40.400412, 1}; 
-    
-    _projection = [self projectionMatrix];
-    _viewMatrix = GLKMatrix4MakeTranslation(0, 0, 50);
-    _mvp = GLKMatrix4Multiply(_projection, _viewMatrix);
-    memcpy(&_raster->projection, _mvp.m, sizeof(GLKMatrix4));
-    
-    
-    [self resize];
-    [self draw];
-//    GLKMatrix4 i = GLKMatrix4Identity;
-//    memcpy(&_proj, i.m, sizeof(GLKMatrix4));
-    
-    raster(_frame, _proj);
-    
-    
-    
-    NSImage *image = [[NSImage alloc] initWithFramebuffer:_frame];
-    [self.imageView setImage:image];
 }
 
 - (void)viewDidLayout{
     [super viewDidLayout];
     [self resize];
+    Matrix44f projection = [self projectionMatrix];
+    Matrix44f mvp = projection * Matrix44f().translation(0, 0, -4);
+    _raster->projection = mvp;
+
     [self draw];
-    
-    
-    _rotation += 0.05;
-//    
-    GLKMatrix4 viewMatrix = GLKMatrix4Rotate(_viewMatrix, _rotation, 0, 1, 0);
-    _mvp = GLKMatrix4Multiply(_projection, viewMatrix);
-    memcpy(&_raster->projection, _mvp.m, sizeof(GLKMatrix4));
-    
-//    
-//    raster(_frame, _proj);
-//    NSImage *image = [[NSImage alloc] initWithFramebuffer:_frame];
-//    [self.imageView setImage:image];
     
 }
 
