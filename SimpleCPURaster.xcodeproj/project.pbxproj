@@ -13,6 +13,7 @@
 		D23095942261FCDC00A657C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D23095932261FCDC00A657C3 /* Assets.xcassets */; };
 		D23095972261FCDC00A657C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D23095952261FCDC00A657C3 /* Main.storyboard */; };
 		D230959A2261FCDC00A657C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D23095992261FCDC00A657C3 /* main.m */; };
+		D273020C2299E47600A443D5 /* raster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D273020B2299E47600A443D5 /* raster.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +32,8 @@
 		D23095A42261FCFB00A657C3 /* math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
 		D23095A7226205B500A657C3 /* framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = framebuffer.hpp; sourceTree = "<group>"; };
 		D23095B42265DE5A00A657C3 /* raster.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raster.hpp; sourceTree = "<group>"; };
+		D273020B2299E47600A443D5 /* raster.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = raster.cpp; sourceTree = "<group>"; };
+		D273020D2299EFA000A443D5 /* pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pipeline.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,7 +94,9 @@
 			isa = PBXGroup;
 			children = (
 				D23095A7226205B500A657C3 /* framebuffer.hpp */,
+				D273020D2299EFA000A443D5 /* pipeline.h */,
 				D23095B42265DE5A00A657C3 /* raster.hpp */,
+				D273020B2299E47600A443D5 /* raster.cpp */,
 				D23095A32261FCFB00A657C3 /* cow.h */,
 				D23095A42261FCFB00A657C3 /* math.h */,
 			);
@@ -167,6 +172,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D273020C2299E47600A443D5 /* raster.cpp in Sources */,
 				D23095922261FCDB00A657C3 /* ViewController.mm in Sources */,
 				D230959A2261FCDC00A657C3 /* main.m in Sources */,
 				D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */,
