@@ -13,7 +13,10 @@
 		D23095942261FCDC00A657C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D23095932261FCDC00A657C3 /* Assets.xcassets */; };
 		D23095972261FCDC00A657C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D23095952261FCDC00A657C3 /* Main.storyboard */; };
 		D230959A2261FCDC00A657C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D23095992261FCDC00A657C3 /* main.m */; };
+		D273020A2299DFD300A443D5 /* bunny.bin in Resources */ = {isa = PBXBuildFile; fileRef = D27302092299DFD300A443D5 /* bunny.bin */; };
 		D273020C2299E47600A443D5 /* raster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D273020B2299E47600A443D5 /* raster.cpp */; };
+		D2D7F4AF22A5CD1F00265EA1 /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D7F4AE22A5CD1F00265EA1 /* View.m */; };
+		D2DBF10D229AF7F200B9CF7F /* SimplePipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2DBF10B229AF7F200B9CF7F /* SimplePipeline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,8 +35,13 @@
 		D23095A42261FCFB00A657C3 /* math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = math.h; sourceTree = "<group>"; };
 		D23095A7226205B500A657C3 /* framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = framebuffer.hpp; sourceTree = "<group>"; };
 		D23095B42265DE5A00A657C3 /* raster.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = raster.hpp; sourceTree = "<group>"; };
+		D27302092299DFD300A443D5 /* bunny.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = bunny.bin; sourceTree = SOURCE_ROOT; };
 		D273020B2299E47600A443D5 /* raster.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = raster.cpp; sourceTree = "<group>"; };
 		D273020D2299EFA000A443D5 /* pipeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pipeline.h; sourceTree = "<group>"; };
+		D2D7F4AD22A5CD1F00265EA1 /* View.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = "<group>"; };
+		D2D7F4AE22A5CD1F00265EA1 /* View.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
+		D2DBF10B229AF7F200B9CF7F /* SimplePipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimplePipeline.cpp; sourceTree = "<group>"; };
+		D2DBF10C229AF7F200B9CF7F /* SimplePipeline.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimplePipeline.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +88,10 @@
 				D230958E2261FCDB00A657C3 /* AppDelegate.m */,
 				D23095902261FCDB00A657C3 /* ViewController.h */,
 				D23095912261FCDB00A657C3 /* ViewController.mm */,
+				D2D7F4AD22A5CD1F00265EA1 /* View.h */,
+				D2D7F4AE22A5CD1F00265EA1 /* View.m */,
+				D2DBF10A229AF7F200B9CF7F /* Renderer */,
+				D27302092299DFD300A443D5 /* bunny.bin */,
 				D23095A12261FCFB00A657C3 /* raster */,
 				D23095932261FCDC00A657C3 /* Assets.xcassets */,
 				D23095952261FCDC00A657C3 /* Main.storyboard */,
@@ -101,6 +113,15 @@
 				D23095A42261FCFB00A657C3 /* math.h */,
 			);
 			path = raster;
+			sourceTree = "<group>";
+		};
+		D2DBF10A229AF7F200B9CF7F /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				D2DBF10B229AF7F200B9CF7F /* SimplePipeline.cpp */,
+				D2DBF10C229AF7F200B9CF7F /* SimplePipeline.hpp */,
+			);
+			path = Renderer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -162,6 +183,7 @@
 			files = (
 				D23095942261FCDC00A657C3 /* Assets.xcassets in Resources */,
 				D23095972261FCDC00A657C3 /* Main.storyboard in Resources */,
+				D273020A2299DFD300A443D5 /* bunny.bin in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,8 +196,10 @@
 			files = (
 				D273020C2299E47600A443D5 /* raster.cpp in Sources */,
 				D23095922261FCDB00A657C3 /* ViewController.mm in Sources */,
+				D2D7F4AF22A5CD1F00265EA1 /* View.m in Sources */,
 				D230959A2261FCDC00A657C3 /* main.m in Sources */,
 				D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */,
+				D2DBF10D229AF7F200B9CF7F /* SimplePipeline.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

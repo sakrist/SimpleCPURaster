@@ -9,22 +9,20 @@
 #include <stdio.h>
 #include "raster.hpp"
     
-Raster::Raster(VertexFunction vFunction, FragmentFunction fFunction) :
-_vertexFunction(std::forward<VertexFunction>(vFunction)), 
-_fragmentFunction(std::forward<FragmentFunction>(fFunction)) {}
+Raster::Raster() {}
 
 Raster::~Raster() {}
 
 void Raster::setFramebuffer(Framebuffer *framebuffer) {
-    _framebuffer = framebuffer;
-    if (_framebuffer) {
-        p_fimageWidth = _framebuffer->getSize().x;
-        p_fimageHeight = _framebuffer->getSize().y;
+    p_framebuffer = framebuffer;
+    if (p_framebuffer) {
+        p_fimageWidth = p_framebuffer->getSize().x;
+        p_fimageHeight = p_framebuffer->getSize().y;
     }
 }
 
 void Raster::clear() {
-    _framebuffer->clear();
+    p_framebuffer->clear();
 }
 
 void Raster::setPipeline(PipelineInterface *pipeline) {
@@ -39,27 +37,28 @@ void Raster::_toRasterSpace(Vec3f& vertex) {
     
     // convert from screen space to NDC then raster (in one go)
     vertex.x = (1.0f + vertex.x) * 0.5f * p_fimageWidth;
-    vertex.y = (1.0f + vertex.y) * 0.5f * p_fimageHeight; 
+    vertex.y = (1.0f - (1.0f + vertex.y) * 0.5f) * p_fimageHeight; 
+    
     vertex.z = 1.0f / vertex.z;        
 }
 
-void Raster::draw(Vec3f *vertices, uint32_t *indices, uint32_t primitivesCount) {
-    if (!_framebuffer)
-        return;
+void Raster::draw(Resource *item) {
+    assert(p_framebuffer != NULL);
+    assert(p_pipeline != NULL);
     
-    Vec3<unsigned char> *frameBuffer = _framebuffer->getColorbuffer();
-    float *depthBuffer  = _framebuffer->getDepthbuffer();
-    uint32_t imageWidth = _framebuffer->getSize().x;
-    uint32_t imageHeight = _framebuffer->getSize().y;
+    Vec3<unsigned char> *frameBuffer = p_framebuffer->getColorbuffer();
+    float *depthBuffer  = p_framebuffer->getDepthbuffer();
+    uint32_t imageWidth = p_framebuffer->getSize().x;
+    uint32_t imageHeight = p_framebuffer->getSize().y;
     
-    for (uint32_t i = 0; i < primitivesCount; ++i) { 
-        const Vec3f &v0 = vertices[indices[i * 3]]; 
-        const Vec3f &v1 = vertices[indices[i * 3 + 1]]; 
-        const Vec3f &v2 = vertices[indices[i * 3 + 2]];
+    for (uint32_t i = 0; i < item->indicesCount; i+=3 ) { // TODO: iterator of primitives from  Resource
+
+        Triangle triangle = Triangle(i, i+1, i+2);
+        item->updateIndices(triangle);
         
-        Vec3f v0Raster = _vertexFunction(v0, projection);
-        Vec3f v1Raster = _vertexFunction(v1, projection);
-        Vec3f v2Raster = _vertexFunction(v2, projection);
+        Vec3f v0Raster = p_pipeline->vertex(item, triangle.a);
+        Vec3f v1Raster = p_pipeline->vertex(item, triangle.b);
+        Vec3f v2Raster = p_pipeline->vertex(item, triangle.c);
         
         _toRasterSpace(v0Raster);
         _toRasterSpace(v1Raster);
@@ -72,6 +71,10 @@ void Raster::draw(Vec3f *vertices, uint32_t *indices, uint32_t primitivesCount) 
         if (v0Raster.z < 0.0 && v1Raster.z < 0.0 && v2Raster.z < 0.0) {
             continue;
         }
+        
+//        if (v0Raster.z > 1.0 && v1Raster.z > 1.0 && v2Raster.z > 1.0) {
+//            continue;
+//        }
         
         // bound box
         float xmin = min3(v0Raster.x, v1Raster.x, v2Raster.x); 
@@ -110,9 +113,9 @@ void Raster::draw(Vec3f *vertices, uint32_t *indices, uint32_t primitivesCount) 
                         pixelSample.z = z;
                         
                         Vec3f pixelSample(x + 0.5f, y + 0.5f, 0.0f);
-                        pixelSample = _fragmentFunction(pixelSample);
-                        frameBuffer[y * imageWidth + x] = Vec3c(pixelSample.x * 255.0, pixelSample.y * 255.0, pixelSample.z * 255.0);
+                        p_pipeline->pixel(item, pixelSample, w, triangle);
                         
+                        frameBuffer[y * imageWidth + x] = Vec3c(pixelSample.x * 255.0, pixelSample.y * 255.0, pixelSample.z * 255.0);
                     }
                 }
             }

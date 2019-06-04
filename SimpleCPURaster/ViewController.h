@@ -7,8 +7,9 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "View.h"
 
-@interface ViewController : NSViewController
+@interface ViewController : NSViewController <MousePointerDelegate>
 @property (weak) IBOutlet NSImageView *imageView;
 
 

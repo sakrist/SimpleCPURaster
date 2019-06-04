@@ -16,14 +16,10 @@
 
 
 class Raster {
-
-    typedef std::function<Vec3f (Vec3f vertex, Matrix44f projection)> VertexFunction;
-    typedef std::function<Vec3f (Vec3f vertex)> FragmentFunction;
     
 public:    
     
-    Raster(VertexFunction vFunction, FragmentFunction fFunction);
-    
+    Raster();
     ~Raster();
     
     void setFramebuffer(Framebuffer *framebuffer);
@@ -31,19 +27,15 @@ public:
     
     void setPipeline(PipelineInterface *pipeline);
     
-    void draw(Vec3f *vertices, uint32_t *indices, uint32_t primitivesCount);
-    
-    Matrix44f projection;
-    
+    void draw(Resource *item);
+        
 private:
     float p_fimageWidth = 0.0;
     float p_fimageHeight = 0.0;
     
     PipelineInterface *p_pipeline = NULL;
     
-    Framebuffer *_framebuffer = NULL;
-    VertexFunction _vertexFunction;
-    FragmentFunction _fragmentFunction;
+    Framebuffer *p_framebuffer = NULL;
     
     void _toRasterSpace(Vec3f& vertex);
 };

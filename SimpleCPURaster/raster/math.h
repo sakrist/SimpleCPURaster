@@ -11,6 +11,11 @@ c++ geometry.cpp  -o geometry -std=c++11
 #include <iomanip> 
 #include <cmath> 
  
+#ifdef __SSE3__
+#include <immintrin.h>
+#include <stdint.h>
+#endif
+
 template<typename T> 
 class Vec2 
 { 
@@ -166,18 +171,31 @@ public:
                         tx, ty, tz, 1);
     }
     
+    static Matrix44 xRotation(float radians)
+    {
+        float cos = cosf(radians);
+        float sin = sinf(radians);
+        return Matrix44(1.0, 0.0, 0.0, 0.0,
+                        0.0, cos, sin, 0.0,
+                        0.0, -sin, cos, 0.0,
+                        0.0, 0.0, 0.0, 1.0);
+    }
+    
+    static Matrix44 yRotation(float radians)
+    {
+        float cos = cosf(radians);
+        float sin = sinf(radians);
+        return Matrix44(cos, 0.0, -sin, 0.0,
+                        0.0, 1.0, 0.0, 0.0,
+                        sin, 0.0, cos, 0.0,
+                        0.0, 0.0, 0.0, 1.0);
+    }
+    
  
 // To make it easier to understand how a matrix multiplication works, the fragment of code included within the #if-#else statement, show how this works if you were to iterate over the coefficients of the resulting matrix (a). However you will often see this multiplication being done using the code contained within the #else-#end statement. It is exactly the same as the first fragment only we have litteraly written down as a series of operations what would actually result from executing the two for() loops contained in the first fragment. It is supposed to be faster, however considering matrix multiplicatin is not necessarily that common, this is probably not super useful nor really necessary (but nice to have -- and it gives you an example of how it can be done, as this how you will this operation implemented in most libraries).
     static void multiply(const Matrix44<T> &a, const Matrix44<T>& b, Matrix44<T> &c) 
     { 
-#if 0 
-        for (uint8_t i = 0; i < 4; ++i) { 
-            for (uint8_t j = 0; j < 4; ++j) { 
-                c[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + 
-                    a[i][2] * b[2][j] + a[i][3] * b[3][j]; 
-            } 
-        } 
-#else 
+
         // A restric qualified pointer (or reference) is basically a promise
         // to the compiler that for the scope of the pointer, the target of the
         // pointer will only be accessed through that pointer (and pointers
@@ -205,24 +223,13 @@ public:
         cp[7]  = ap[3] * bp[4]  + ap[7] * bp[5]  + ap[11] * bp[6]  + ap[15] * bp[7];
         cp[11] = ap[3] * bp[8]  + ap[7] * bp[9]  + ap[11] * bp[10] + ap[15] * bp[11];
         cp[15] = ap[3] * bp[12] + ap[7] * bp[13] + ap[11] * bp[14] + ap[15] * bp[15];
-        
-#endif 
+       
     } 
     
  
     // \brief return a transposed copy of the current matrix as a new matrix
     Matrix44 transposed() const 
     { 
-#if 0 
-        Matrix44 t; 
-        for (uint8_t i = 0; i < 4; ++i) { 
-            for (uint8_t j = 0; j < 4; ++j) { 
-                t[i][j] = x[j][i]; 
-            } 
-        } 
- 
-        return t; 
-#else 
         return Matrix44 (x[0][0], 
                          x[1][0], 
                          x[2][0], 
@@ -239,7 +246,6 @@ public:
                          x[1][3], 
                          x[2][3], 
                          x[3][3]); 
-#endif 
     } 
  
     // \brief transpose itself
@@ -265,31 +271,28 @@ public:
  
         return *this; 
     } 
- 
-// This method needs to be used for point-matrix multiplication. Keep in mind we don't make the distinction between points and vectors at least from a programming point of view, as both (as well as normals) are declared as Vec3. However, mathematically they need to be treated differently. Points can be translated when translation for vectors is meaningless. Furthermore, points are implicitly be considered as having homogeneous coordinates. Thus the w coordinates needs to be computed and to convert the coordinates from homogeneous back to Cartesian coordinates, we need to divided x, y z by w.
-// The coordinate w is more often than not equals to 1, but it can be different than 1 especially when the matrix is projective matrix (perspective projection matrix).
-//    template<typename S> 
-//    void multVecMatrix(const Vec3<S> &src, Vec3<S> &dst) const 
-//    { 
-//        S a, b, c, w; 
-// 
-//        a = src[0] * x[0][0] + src[1] * x[1][0] + src[2] * x[2][0] + x[3][0]; 
-//        b = src[0] * x[0][1] + src[1] * x[1][1] + src[2] * x[2][1] + x[3][1]; 
-//        c = src[0] * x[0][2] + src[1] * x[1][2] + src[2] * x[2][2] + x[3][2]; 
-//        w = src[0] * x[0][3] + src[1] * x[1][3] + src[2] * x[2][3] + x[3][3]; 
-// 
-//        dst.x = a / w; 
-//        dst.y = b / w; 
-//        dst.z = c / w; 
-//    } 
+
     
     template<typename S>
     Vec3<S> operator * (const Vec3<S> &src) 
     { 
+//#if   defined(__SSE3__)
+//        float val[4] = {src[0], src[1], src[2], 0.0f};
+//        const __m128 v = _mm_load_ps(&val[0]);
+//        
+//        const __m128 r = _mm_load_ps(&x[0][0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 0))
+//        + _mm_load_ps(&x[1][0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(1, 1, 1, 1))
+//        + _mm_load_ps(&x[2][0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 2, 2, 2))
+//        + _mm_load_ps(&x[3][0]) * _mm_shuffle_ps(v, v, _MM_SHUFFLE(3, 3, 3, 3));
+//        
+//        float ret[4];
+//        *(__m128*)&ret = r;
+//        return Vec3<S>(ret[0], ret[1], ret[2]);
+////        Vec3<S>
+//#endif
+        
         Vec3<S> dst;
-        
         S a, b, c, w; 
-        
         a = src[0] * x[0][0] + src[1] * x[1][0] + src[2] * x[2][0] + x[3][0]; 
         b = src[0] * x[0][1] + src[1] * x[1][1] + src[2] * x[2][1] + x[3][1]; 
         c = src[0] * x[0][2] + src[1] * x[1][2] + src[2] * x[2][2] + x[3][2]; 
@@ -297,7 +300,8 @@ public:
         
         dst.x = a / w; 
         dst.y = b / w; 
-        dst.z = c / w; 
+        dst.z = c / w;
+        
         return dst;
     }
  
@@ -454,27 +458,30 @@ static inline float edgeFunction(const Vec3f &a, const Vec3f &b, const Vec3f &c)
     return (c[0] - a[0]) * (b[1] - a[1]) - (c[1] - a[1]) * (b[0] - a[0]); 
 }
 
+static inline float degreesToRadians(float degrees) {
+    return degrees * (M_PI / 180.0);
+}
 
+#if   defined(__SSE3__)
+static inline float minss( float a, float b ) {
+    _mm_store_ss( &a, _mm_min_ss(_mm_set_ss(a),_mm_set_ss(b)) );
+    return a;
+}
 
-// Testing our code. To test the matrix inversion code, we used Maya to output the values of a matrix and its inverse (check the video at the top of this page). Of course this implies that Maya actually does the right thing, but we can probably agree, that is actually does;). These are the values for the input matrix:
-// 0.707107 0 -0.707107 0 -0.331295 0.883452 -0.331295 0 0.624695 0.468521 0.624695 0 4.000574 3.00043 4.000574 1
-// Given the input matrix, the inverse matrix computed by our code should match the following values:
-// 0.707107 -0.331295 0.624695 0 0 0.883452 0.468521 0 -0.707107 -0.331295 0.624695 0 0 0 -6.404043 1
-#if 0 
-int main(int argc, char **argv) 
-{ 
-    Vec3f v(0, 1, 2); 
-    std::cerr << v << std::endl; 
-    Matrix44f a, b, c; 
-    c = a * b; 
- 
-    Matrix44f d(0.707107, 0, -0.707107, 0, -0.331295, 0.883452, -0.331295, 0, 0.624695, 0.468521, 0.624695, 0, 4.000574, 3.00043, 4.000574, 1); 
-    std::cerr << d << std::endl; 
-    d.invert(); 
-    std::cerr << d << std::endl; 
- 
-    return 0; 
-} 
-#endif 
+static inline float maxss( float a, float b ) {
+    _mm_store_ss( &a, _mm_max_ss(_mm_set_ss(a),_mm_set_ss(b)) );
+    return a;
+}
+
+static inline float clamp( float val, float minval, float maxval ) {
+    _mm_store_ss( &val, _mm_min_ss( _mm_max_ss(_mm_set_ss(val),_mm_set_ss(minval)), _mm_set_ss(maxval) ) );
+    return val;
+}
+
+static inline Vec3f clamp( const Vec3f& val, const float minval, const float maxval ) {
+    return Vec3f(clamp(val.x, minval, maxval), clamp(val.y, minval, maxval), clamp(val.z, minval, maxval));
+}
+    
+#endif
 
 #endif
