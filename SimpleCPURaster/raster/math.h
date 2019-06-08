@@ -1,7 +1,4 @@
-/*This program illustrates how the concept of vector and matrix can be implemented in C++. This is a light version of the implementation. It contains the most essential methods to manipulate vectors and matrices. It should be enough for most projects. Vectors and matrices are really the alphabet as we said in the lesson of any graphics application. It's really important you feel confortable with these techniques especially with the concepts of normalizing vectors, computing their length, computing the dot and cross products of two vectors, and the point- and vector-matrix multiplication (and knowing the difference between the two).
-Instructions to compile this program:
-c++ geometry.cpp  -o geometry -std=c++11
-*/
+
 
 #ifndef _MATH_H_
 #define _MATH_H_
@@ -23,6 +20,7 @@ public:
     Vec2() : x(0), y(0) {} 
     Vec2(T xx) : x(xx), y(xx) {} 
     Vec2(T xx, T yy) : x(xx), y(yy) {} 
+    Vec2(T* x) : x(x[0]), y(x[1]) {} 
     Vec2 operator + (const Vec2 &v) const 
     { return Vec2(x + v.x, y + v.y); } 
     Vec2 operator / (const T &r) const 
@@ -53,7 +51,9 @@ class Vec3
 public: 
     Vec3() : x(T(0)), y(T(0)), z(T(0)) {} 
     Vec3(T xx) : x(xx), y(xx), z(xx) {} 
-    Vec3(T xx, T yy, T zz) : x(xx), y(yy), z(zz) {} 
+    Vec3(T xx, T yy, T zz) : x(xx), y(yy), z(zz) {}
+    Vec3(T* x) : x(x[0]), y(x[1]), z(x[2]) {}
+    Vec3(const T* x) : x(x[0]), y(x[1]), z(x[2]) {}
     Vec3 operator + (const Vec3 &v) const 
     { return Vec3(x + v.x, y + v.y, z + v.z); } 
     Vec3 operator - (const Vec3 &v) const 
@@ -103,41 +103,39 @@ public:
     T x, y, z; 
 }; 
  
-// Now you can specialize the class. We are just showing two examples here. In your code you can declare a vector either that way: Vec3<float> a, or that way: Vec3f a
+// Now you can specialize the class. We are just showing 3 examples here. In your code you can declare a vector either that way: Vec3<float> a, or that way: Vec3f a
 typedef Vec3<float> Vec3f; 
 typedef Vec3<int> Vec3i;
 typedef Vec3<unsigned char> Vec3c;
  
-// Implementation of a generic 4x4 Matrix class - Same thing here than with the Vec3 class. It uses a template which is maybe less useful than with vectors but it can be used to define the coefficients of the matrix to be either floats (the most case) or doubles depending on our needs.
-// To use you can either write: Matrix44<float> m; or: Matrix44f m;
 template<typename T> 
 class Matrix44 
 { 
 public: 
  
-    T x[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}}; 
+    T x[16] = {1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1}; 
  
     Matrix44() {} 
  
     Matrix44 (T a, T b, T c, T d, T e, T f, T g, T h, 
               T i, T j, T k, T l, T m, T n, T o, T p) 
     { 
-        x[0][0] = a; 
-        x[0][1] = b; 
-        x[0][2] = c; 
-        x[0][3] = d; 
-        x[1][0] = e; 
-        x[1][1] = f; 
-        x[1][2] = g; 
-        x[1][3] = h; 
-        x[2][0] = i; 
-        x[2][1] = j; 
-        x[2][2] = k; 
-        x[2][3] = l; 
-        x[3][0] = m; 
-        x[3][1] = n; 
-        x[3][2] = o; 
-        x[3][3] = p; 
+        x[0] = a; 
+        x[1] = b; 
+        x[2] = c; 
+        x[3] = d; 
+        x[4] = e; 
+        x[5] = f; 
+        x[6] = g; 
+        x[7] = h; 
+        x[8] = i; 
+        x[9] = j; 
+        x[10] = k; 
+        x[11] = l; 
+        x[12] = m; 
+        x[13] = n; 
+        x[14] = o; 
+        x[15] = p; 
     } 
  
     const T* operator [] (uint8_t i) const { return x[i]; } 
@@ -192,17 +190,12 @@ public:
     }
     
  
-// To make it easier to understand how a matrix multiplication works, the fragment of code included within the #if-#else statement, show how this works if you were to iterate over the coefficients of the resulting matrix (a). However you will often see this multiplication being done using the code contained within the #else-#end statement. It is exactly the same as the first fragment only we have litteraly written down as a series of operations what would actually result from executing the two for() loops contained in the first fragment. It is supposed to be faster, however considering matrix multiplicatin is not necessarily that common, this is probably not super useful nor really necessary (but nice to have -- and it gives you an example of how it can be done, as this how you will this operation implemented in most libraries).
     static void multiply(const Matrix44<T> &a, const Matrix44<T>& b, Matrix44<T> &c) 
     { 
 
-        // A restric qualified pointer (or reference) is basically a promise
-        // to the compiler that for the scope of the pointer, the target of the
-        // pointer will only be accessed through that pointer (and pointers
-        // copied from it.
-        const T * __restrict ap = &a.x[0][0]; 
-        const T * __restrict bp = &b.x[0][0]; 
-              T * __restrict cp = &c.x[0][0]; 
+        const T * __restrict ap = &a.x[0]; 
+        const T * __restrict bp = &b.x[0]; 
+              T * __restrict cp = &c.x[0]; 
  
         cp[0]  = ap[0] * bp[0]  + ap[4] * bp[1]  + ap[8] * bp[2]   + ap[12] * bp[3];
         cp[4]  = ap[0] * bp[4]  + ap[4] * bp[5]  + ap[8] * bp[6]   + ap[12] * bp[7];
@@ -226,77 +219,30 @@ public:
        
     } 
     
- 
-    // \brief return a transposed copy of the current matrix as a new matrix
-    Matrix44 transposed() const 
-    { 
-        return Matrix44 (x[0][0], 
-                         x[1][0], 
-                         x[2][0], 
-                         x[3][0], 
-                         x[0][1], 
-                         x[1][1], 
-                         x[2][1], 
-                         x[3][1], 
-                         x[0][2], 
-                         x[1][2], 
-                         x[2][2], 
-                         x[3][2], 
-                         x[0][3], 
-                         x[1][3], 
-                         x[2][3], 
-                         x[3][3]); 
-    } 
- 
-    // \brief transpose itself
-    Matrix44& transpose () 
-    { 
-        Matrix44 tmp (x[0][0], 
-                      x[1][0], 
-                      x[2][0], 
-                      x[3][0], 
-                      x[0][1], 
-                      x[1][1], 
-                      x[2][1], 
-                      x[3][1], 
-                      x[0][2], 
-                      x[1][2], 
-                      x[2][2], 
-                      x[3][2], 
-                      x[0][3], 
-                      x[1][3], 
-                      x[2][3], 
-                      x[3][3]); 
-        *this = tmp; 
- 
-        return *this; 
-    } 
-
     
     template<typename S>
     Vec3<S> operator * (const Vec3<S> &src) 
     { 
-//#if   defined(__SSE3__)
-//        float val[4] = {src[0], src[1], src[2], 0.0f};
-//        const __m128 v = _mm_load_ps(&val[0]);
-//        
-//        const __m128 r = _mm_load_ps(&x[0][0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 0))
-//        + _mm_load_ps(&x[1][0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(1, 1, 1, 1))
-//        + _mm_load_ps(&x[2][0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 2, 2, 2))
-//        + _mm_load_ps(&x[3][0]) * _mm_shuffle_ps(v, v, _MM_SHUFFLE(3, 3, 3, 3));
-//        
-//        float ret[4];
-//        *(__m128*)&ret = r;
-//        return Vec3<S>(ret[0], ret[1], ret[2]);
-////        Vec3<S>
-//#endif
+#if   defined(__SSE3__)
+                
+        float val[4] = {src[0], src[1], src[2], 1.0f};
+        const __m128 v = _mm_load_ps(&val[0]);
+        
+        const __m128 r = _mm_load_ps(&x[0])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(0, 0, 0, 0))
+        + _mm_load_ps(&x[4])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(1, 1, 1, 1))
+        + _mm_load_ps(&x[8])  * _mm_shuffle_ps(v, v, _MM_SHUFFLE(2, 2, 2, 2))
+        + _mm_load_ps(&x[12]) * _mm_shuffle_ps(v, v, _MM_SHUFFLE(3, 3, 3, 3));
+        
+        *(__m128*)&val = r;
+        return Vec3<S>(val[0], val[1], val[2]);
+#endif
         
         Vec3<S> dst;
         S a, b, c, w; 
-        a = src[0] * x[0][0] + src[1] * x[1][0] + src[2] * x[2][0] + x[3][0]; 
-        b = src[0] * x[0][1] + src[1] * x[1][1] + src[2] * x[2][1] + x[3][1]; 
-        c = src[0] * x[0][2] + src[1] * x[1][2] + src[2] * x[2][2] + x[3][2]; 
-        w = src[0] * x[0][3] + src[1] * x[1][3] + src[2] * x[2][3] + x[3][3]; 
+        a = src[0] * x[0] + src[1] * x[4] + src[2] * x[8] + x[12]; 
+        b = src[0] * x[1] + src[1] * x[5] + src[2] * x[9] + x[13]; 
+        c = src[0] * x[2] + src[1] * x[6] + src[2] * x[10] + x[14]; 
+        w = src[0] * x[3] + src[1] * x[7] + src[2] * x[11] + x[15]; 
         
         dst.x = a / w; 
         dst.y = b / w; 
@@ -305,183 +251,67 @@ public:
         return dst;
     }
  
-// This method needs to be used for vector-matrix multiplication. Look at the differences with the previous method (to compute a point-matrix multiplication). We don't use the coefficients in the matrix that account for translation (x[3][0], x[3][1], x[3][2]) and we don't compute w.
-    template<typename S> 
-    void multDirMatrix(const Vec3<S> &src, Vec3<S> &dst) const 
-    { 
-        S a, b, c; 
- 
-        a = src[0] * x[0][0] + src[1] * x[1][0] + src[2] * x[2][0]; 
-        b = src[0] * x[0][1] + src[1] * x[1][1] + src[2] * x[2][1]; 
-        c = src[0] * x[0][2] + src[1] * x[1][2] + src[2] * x[2][2]; 
- 
-        dst.x = a; 
-        dst.y = b; 
-        dst.z = c; 
-    } 
- 
-// Compute the inverse of the matrix using the Gauss-Jordan (or reduced row) elimination method. We didn't explain in the lesson on Geometry how the inverse of matrix can be found. Don't worry at this point if you don't understand how this works. But we will need to be able to compute the inverse of matrices in the first lessons of the "Foundation of 3D Rendering" section, which is why we've added this code. For now, you can just use it and rely on it for doing what it's supposed to do. If you want to learn how this works though, check the lesson on called Matrix Inverse in the "Mathematics and Physics of Computer Graphics" section.
-    Matrix44 inverse() const 
-    { 
-        int i, j, k; 
-        Matrix44 s; 
-        Matrix44 t (*this); 
- 
-        // Forward elimination
-        for (i = 0; i < 3 ; i++) { 
-            int pivot = i; 
- 
-            T pivotsize = t[i][i]; 
- 
-            if (pivotsize < 0) 
-                pivotsize = -pivotsize; 
- 
-                for (j = i + 1; j < 4; j++) { 
-                    T tmp = t[j][i]; 
- 
-                    if (tmp < 0) 
-                        tmp = -tmp; 
- 
-                        if (tmp > pivotsize) { 
-                            pivot = j; 
-                            pivotsize = tmp; 
-                        } 
-                } 
- 
-            if (pivotsize == 0) { 
-                // Cannot invert singular matrix
-                return Matrix44(); 
-            } 
- 
-            if (pivot != i) { 
-                for (j = 0; j < 4; j++) { 
-                    T tmp; 
- 
-                    tmp = t[i][j]; 
-                    t[i][j] = t[pivot][j]; 
-                    t[pivot][j] = tmp; 
- 
-                    tmp = s[i][j]; 
-                    s[i][j] = s[pivot][j]; 
-                    s[pivot][j] = tmp; 
-                } 
-            } 
- 
-            for (j = i + 1; j < 4; j++) { 
-                T f = t[j][i] / t[i][i]; 
- 
-                for (k = 0; k < 4; k++) { 
-                    t[j][k] -= f * t[i][k]; 
-                    s[j][k] -= f * s[i][k]; 
-                } 
-            } 
-        } 
- 
-        // Backward substitution
-        for (i = 3; i >= 0; --i) { 
-            T f; 
- 
-            if ((f = t[i][i]) == 0) { 
-                // Cannot invert singular matrix
-                return Matrix44(); 
-            } 
- 
-            for (j = 0; j < 4; j++) { 
-                t[i][j] /= f; 
-                s[i][j] /= f; 
-            } 
- 
-            for (j = 0; j < i; j++) { 
-                f = t[j][i]; 
- 
-                for (k = 0; k < 4; k++) { 
-                    t[j][k] -= f * t[i][k]; 
-                    s[j][k] -= f * s[i][k]; 
-                } 
-            } 
-        } 
- 
-        return s; 
-    } 
- 
-    // \brief set current matrix to its inverse
-    const Matrix44<T>& invert() 
-    { 
-        *this = inverse(); 
-        return *this; 
-    } 
- 
-    friend std::ostream& operator << (std::ostream &s, const Matrix44 &m) 
-    { 
-        std::ios_base::fmtflags oldFlags = s.flags(); 
-        int width = 12; // total with of the displayed number 
-        s.precision(5); // control the number of displayed decimals 
-        s.setf (std::ios_base::fixed); 
- 
-        s << "[" << std::setw (width) << m[0][0] << 
-             " " << std::setw (width) << m[0][1] << 
-             " " << std::setw (width) << m[0][2] << 
-             " " << std::setw (width) << m[0][3] << "\n" << 
- 
-             " " << std::setw (width) << m[1][0] << 
-             " " << std::setw (width) << m[1][1] << 
-             " " << std::setw (width) << m[1][2] << 
-             " " << std::setw (width) << m[1][3] << "\n" << 
- 
-             " " << std::setw (width) << m[2][0] << 
-             " " << std::setw (width) << m[2][1] << 
-             " " << std::setw (width) << m[2][2] << 
-             " " << std::setw (width) << m[2][3] << "\n" << 
- 
-             " " << std::setw (width) << m[3][0] << 
-             " " << std::setw (width) << m[3][1] << 
-             " " << std::setw (width) << m[3][2] << 
-             " " << std::setw (width) << m[3][3] << "]"; 
- 
-        s.flags (oldFlags); 
-        return s; 
-    } 
+
 }; 
  
 typedef Matrix44<float> Matrix44f; 
- 
 
-static inline float min3(const float &a, const float &b, const float &c) { 
-    return std::min(a, std::min(b, c)); 
-} 
-
-static inline float max3(const float &a, const float &b, const float &c) { 
-    return std::max(a, std::max(b, c)); 
-} 
-
-static inline float edgeFunction(const Vec3f &a, const Vec3f &b, const Vec3f &c) { 
-    return (c[0] - a[0]) * (b[1] - a[1]) - (c[1] - a[1]) * (b[0] - a[0]); 
+static inline Vec3f cBarycentric(const Vec3f &a, const Vec3f &b, const Vec3f &c, const Vec3f &w) {
+    Vec3f result;
+    
+#if defined(__SSE3__)
+    
+    float ret[4];
+    _mm_storer_ps(&ret[0], _mm_add_ps(_mm_add_ps(_mm_mul_ps(_mm_set1_ps(w.x), 
+                                                            _mm_set_ps(a.x, a.y, a.z, 0.0f)),
+                                                 _mm_mul_ps(_mm_set1_ps(w.y), 
+                                                            _mm_set_ps(b.x, b.y, b.z, 0.0f))),
+                                      _mm_mul_ps(_mm_set1_ps(w.z), 
+                                                 _mm_set_ps(c.x, c.y, c.z, 0.0f))));    
+    return Vec3f(ret[0], ret[1], ret[2]);
+#else
+    result.x = (fmaf(w.x, a.x, fmaf(w.y, b.x, w.z * c.x)));
+    result.y = (fmaf(w.x, a.y, fmaf(w.y, b.y, w.z * c.y)));
+    result.z = (fmaf(w.x, a.z, fmaf(w.y, b.z, w.z * c.z)));
+#endif
+    return result;
 }
+
+
 
 static inline float degreesToRadians(float degrees) {
     return degrees * (M_PI / 180.0);
 }
 
-#if   defined(__SSE3__)
-static inline float minss( float a, float b ) {
-    _mm_store_ss( &a, _mm_min_ss(_mm_set_ss(a),_mm_set_ss(b)) );
-    return a;
+
+static inline float edgeFunction(const Vec3f &a, const Vec3f &b, const Vec3f &c) { 
+#if defined(__SSE3__)
+    
+    float r2[4];
+    _mm_storer_ps(&r2[0], _mm_sub_ps(_mm_set_ps(c[0], b[1], c[1], b[0]), _mm_set_ps(a[0], a[1], a[1], a[0])));
+    return r2[0] * r2[1] - r2[2] * r2[3]; 
+    
+#else
+    return (c[0] - a[0]) * (b[1] - a[1]) - (c[1] - a[1]) * (b[0] - a[0]);
+#endif
 }
 
-static inline float maxss( float a, float b ) {
-    _mm_store_ss( &a, _mm_max_ss(_mm_set_ss(a),_mm_set_ss(b)) );
-    return a;
-}
 
-static inline float clamp( float val, float minval, float maxval ) {
-    _mm_store_ss( &val, _mm_min_ss( _mm_max_ss(_mm_set_ss(val),_mm_set_ss(minval)), _mm_set_ss(maxval) ) );
-    return val;
-}
+static inline float clamp( float& val, float& minval, float& maxval ) {
+    return std::min( std::max(val, minval), maxval);
+}    
 
-static inline Vec3f clamp( const Vec3f& val, const float minval, const float maxval ) {
+static inline float min3(float& a, float& b, float& c) {
+    return std::min(a, std::min(b, c));
+} 
+
+static inline float max3(float &a, float &b, float &c) {
+    return std::max(a, std::max(b, c));
+} 
+
+
+static inline Vec3f clamp(  Vec3f& val, float minval, float maxval ) {
     return Vec3f(clamp(val.x, minval, maxval), clamp(val.y, minval, maxval), clamp(val.z, minval, maxval));
 }
-    
-#endif
 
 #endif

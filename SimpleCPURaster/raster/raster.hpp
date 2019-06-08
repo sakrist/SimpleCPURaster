@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include "framebuffer.hpp"
-#include "pipeline.h"
+#include "IPipeline.h"
 
 
 

@@ -11,42 +11,41 @@
 
 #include <stdio.h>
 #include "math.h"
-#include "pipeline.h"
+#include "IPipeline.h"
+#include "Resource.hpp"
 
 
 class SimplePipeline : public PipelineInterface {
     
 public:
     
-    typedef std::function<Vec3f (const Vec3f& vertex, const Matrix44f& projection)> VertexFunction;
-    typedef std::function<Vec3f (Vec3f position, Vec3f normal )> FragmentFunction;
+    SimplePipeline() {}
     
     Matrix44f projection;
     
+    Vec3f _project(const Vec3f& v, Matrix44f _p) {
+        return _p * v;
+    }
     
-    SimplePipeline(VertexFunction vFunction, FragmentFunction fFunction) : p_vertexFunction(vFunction), p_fragmentFunction(fFunction) {}
-    
-    Vec3f vertex(const Resource *resource, uint32_t index) {
-        const Vec3f &v = resource->getPosition(index);
-        return p_vertexFunction(v, projection);
+    Vec3f position(const Resource *resource, uint32_t index) {
+        const Vec3f v = ((const Vec3f *)(resource->getAttribute(PositionsAttribute, index)))[0];
+        return _project(v, projection); 
     }
     void pixel(const Resource *resource, Vec3f& pixel, const Vec3f& barycentric, const Triangle& triangle) {
-        Vec3f normal;
         
-        const Vec3f &n0 = resource->getNormal(triangle.a);
-        const Vec3f &n1 = resource->getNormal(triangle.b);
-        const Vec3f &n2 = resource->getNormal(triangle.c);
         
-        normal.x = barycentric.x * n0[0] + barycentric.y * n1[0] + barycentric.z * n2[0]; 
-        normal.y = barycentric.x * n0[1] + barycentric.y * n1[1] + barycentric.z * n2[1]; 
-        normal.z = barycentric.x * n0[2] + barycentric.y * n1[2] + barycentric.z * n2[2];
+        const Vec3f &n0 = ((const Vec3f *)(resource->getAttribute(NormalsAttribute, triangle.a)))[0];
+        const Vec3f &n1 = ((const Vec3f *)(resource->getAttribute(NormalsAttribute, triangle.b)))[0];
+        const Vec3f &n2 = ((const Vec3f *)(resource->getAttribute(NormalsAttribute, triangle.c)))[0];
+
+        Vec3f normal = cBarycentric(n0, n1, n2, barycentric);
         
-        pixel = p_fragmentFunction(pixel, normal);
+        Vec3f lightDirection(1.0f);
+        Vec3f color = fmax(normal.dotProduct(lightDirection), 0.0) * 0.56f;
+        pixel = clamp(color, 0.0, 1.0);
+        
     }
     
-private:
-    VertexFunction p_vertexFunction;
-    FragmentFunction p_fragmentFunction;
     
 };
 

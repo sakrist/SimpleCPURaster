@@ -29,10 +29,11 @@ public:
     }
     
     void clear() {
-        for (uint32_t i = 0; i < _length; ++i) { 
-            _colorBuffer[i] = _clearColor;
-            _depthBuffer[i] = MAXFLOAT;
-        }
+        int r = ((int *)&_clearColor)[0];
+        memset(_colorBuffer, r, _length * sizeof(Vec3c));
+        float v = MAXFLOAT;
+        void *rr = &v;
+        memset_pattern4(_depthBuffer, rr, _length * sizeof(float));
     }
     
     Vec2i getSize() const {

@@ -11,7 +11,6 @@
 
 #include "raster.hpp"
 #include "framebuffer.hpp"
-#include "cow.h"
 #include "SimplePipeline.hpp"
 
 @interface NSImage (Framebuffer)
@@ -24,14 +23,9 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     Framebuffer *_frame;
     Raster *_raster;
     SimplePipeline *_pipeline;
-    Resource _cube;
-    Resource _cow;
     
     Resource _bunny;
-    
-    NSMutableData *indicesData;
-    NSMutableData *verticesData;
-    
+        
     float _rotation;
     
     CGPoint _lastPoint;
@@ -56,27 +50,8 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     [((View *)self.view) activeTrackingArea];
     [self loadBunny];
     
-    _cube.position.vector = cubeVertices;
-    _cube.indices = cubeIndices;
-    _cube.indicesCount = 12*3;
-    
-    _cow.position.vector = vertices;
-    _cow.indices = nvertices;
-    _cow.indicesCount = 3156*3;
-    
     _raster = new Raster(); 
-    _pipeline = new SimplePipeline( [](Vec3f vertex, Matrix44f projection) -> Vec3f {
-        Vec3f vertexOut = projection * vertex;
-        return vertexOut;
-    } , [](Vec3f vertex, Vec3f normal) -> Vec3f {
-        
-        Vec3f diffuse = Vec3f(0.56f);
-        Vec3f lightDirection(1, 1, 1);
-        Vec3f color = fmax(normal.dotProduct(lightDirection), 0.0) * diffuse;
-        color = clamp(color, 0.0, 1.0);
-//        Vec3f n = vertex.normalize();        
-        return color ;
-    });
+    _pipeline = new SimplePipeline();
 
     _raster->setPipeline(_pipeline);
 }
@@ -85,8 +60,7 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     [super viewDidLayout];
     [self resize];
     Matrix44f projection = [self projectionMatrix];
-    Matrix44f mvp = projection * (Matrix44f().translation(0, 0, -30) * (Matrix44f().xRotation(pitch) * Matrix44f().yRotation(yaw)));
-    _pipeline->projection = mvp;
+    _pipeline->projection = projection * (Matrix44f().translation(0, 0, -30) * (Matrix44f().xRotation(pitch) * Matrix44f().yRotation(yaw)));
 
     [self draw];
     
@@ -110,9 +84,7 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
 - (void)draw {
     
     NSDate *date = [NSDate date];
-    
-//    _raster->draw(&_cow);
-//    _raster->draw(&_cube);
+
     _raster->draw(&_bunny);
     
     NSLog(@"draw: %f ms", -1000 * [date timeIntervalSinceNow]);
@@ -143,7 +115,9 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     
     _lastPoint = point;
     
+    NSDate *date = [NSDate date];
     _raster->clear();
+    NSLog(@"clear: %f ms", -1000 * [date timeIntervalSinceNow]);
     [self draw];
 }
     
@@ -175,11 +149,9 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     int icount = 0;
     [data getBytes:&icount range:NSMakeRange(bytesOffset, 4)];
     bytesOffset += 4;
-    
-//    _indexCount = icount;
-    
+        
     NSLog(@"indices count %d", icount);
-    indicesData = [NSMutableData dataWithData:[data subdataWithRange:NSMakeRange(bytesOffset,  sizeof(GLuint) * icount)]];
+    NSMutableData *indicesData = [NSMutableData dataWithData:[data subdataWithRange:NSMakeRange(bytesOffset,  sizeof(GLuint) * icount)]];
     
     bytesOffset += sizeof(GLuint) * icount;
     
@@ -187,28 +159,22 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     [data getBytes:&vcount range:NSMakeRange(bytesOffset, 4)];
     bytesOffset += 4;
     
-    verticesData = [NSMutableData dataWithData:[data subdataWithRange:NSMakeRange(bytesOffset, vcount*(3+3)*4)]];
+    NSMutableData *verticesData = [NSMutableData dataWithData:[data subdataWithRange:NSMakeRange(bytesOffset, vcount*(3+3)*4)]];
     
     bytesOffset += vcount*(3+3)*4; // end
     
     NSLog(@"vertices count %d", vcount);
     
-    GLKVector3 *v = (GLKVector3*)[verticesData bytes];
+    GLKVector3 *v = (GLKVector3*)[verticesData mutableBytes];
     int all_vn = vcount*2;
     for (int i = 0; i < all_vn; i += 2) {
         v[i] = GLKVector3MultiplyScalar(GLKVector3Subtract(v[i], center), 0.05);
     }
     
-    _bunny.indicesCount = icount;
-    _bunny.indices = (uint32_t *)indicesData.bytes;
-    
-    _bunny.position.vector = (Vec3f *)verticesData.bytes; 
-    _bunny.position.stride = 2;
-    
-    _bunny.normal.vector = (Vec3f *)verticesData.bytes;
-    _bunny.normal.offset = 1;
-    _bunny.normal.stride = 2;
-    
+    _bunny.setIndices(icount, (uint32_t *)indicesData.bytes);
+    _bunny.setAttributesBuffer((float *)verticesData.bytes, (uint32_t)verticesData.length/sizeof(float));
+    _bunny.setAttribute(PositionsAttribute, 6);
+    _bunny.setAttribute(NormalsAttribute, 6, 3);
     
 }
 

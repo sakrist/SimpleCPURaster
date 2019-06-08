@@ -51,14 +51,13 @@ void Raster::draw(Resource *item) {
     uint32_t imageWidth = p_framebuffer->getSize().x;
     uint32_t imageHeight = p_framebuffer->getSize().y;
     
-    for (uint32_t i = 0; i < item->indicesCount; i+=3 ) { // TODO: iterator of primitives from  Resource
+    for (uint32_t i = 0; i < item->primitivesCount(); i++ ) { // TODO: iterator of primitives from  Resource
 
-        Triangle triangle = Triangle(i, i+1, i+2);
-        item->updateIndices(triangle);
+        Triangle triangle = item->getTriangle(i);
         
-        Vec3f v0Raster = p_pipeline->vertex(item, triangle.a);
-        Vec3f v1Raster = p_pipeline->vertex(item, triangle.b);
-        Vec3f v2Raster = p_pipeline->vertex(item, triangle.c);
+        Vec3f v0Raster = p_pipeline->position(item, triangle.a);
+        Vec3f v1Raster = p_pipeline->position(item, triangle.b);
+        Vec3f v2Raster = p_pipeline->position(item, triangle.c);
         
         _toRasterSpace(v0Raster);
         _toRasterSpace(v1Raster);
@@ -103,9 +102,17 @@ void Raster::draw(Resource *item) {
                 w[2] = edgeFunction(v0Raster, v1Raster, pixelSample); 
                 if (w[0] >= 0.0 && w[1] >= 0.0 && w[2] >= 0.0) {
                     w /= area;
-                    
+
+#if defined(__SSE3__)
+                    __m128 v = _mm_mul_ps(_mm_set_ps(v0Raster.z, v1Raster.z, v2Raster.z, 0.0f),
+                                          _mm_set_ps(w[0], w[1], w[2], 0.0f));
+                    v = _mm_hadd_ps(v,v);
+                    v = _mm_hadd_ps(v,v);
+                    float z;
+                    _mm_store_ss(&z, _mm_div_ss(_mm_set_ss(1.0f), v));
+#else
                     float z = 1.0f / (v0Raster.z * w[0] + v1Raster.z * w[1] + v2Raster.z * w[2]); 
-                    
+#endif               
                     // Depth-buffer test 
                     if (z < depthBuffer[y * imageWidth + x]) { 
                         depthBuffer[y * imageWidth + x] = z;
