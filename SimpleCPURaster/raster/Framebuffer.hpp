@@ -10,15 +10,15 @@
 #define Framebuffer_hpp
 
 #include <stdio.h>
-#include "math.h"
+#include "Math.h"
 
 class Framebuffer {
 public:
-    Framebuffer(Vec2i size) : _size(size), _length(size.x * size.y) {
+    Framebuffer(ivec2 size) : _size(size), _length(size.x * size.y) {
         assert(_size.x > 0);
         assert(_size.y > 0);
         
-        _colorBuffer = new Vec3c[_length];
+        _colorBuffer = new cvec3[_length];
         _depthBuffer = new float[_length];
         clear();
     }
@@ -30,17 +30,17 @@ public:
     
     void clear() {
         int r = ((int *)&_clearColor)[0];
-        memset(_colorBuffer, r, _length * sizeof(Vec3c));
+        memset(_colorBuffer, r, _length * sizeof(cvec3));
         float v = MAXFLOAT;
         void *rr = &v;
         memset_pattern4(_depthBuffer, rr, _length * sizeof(float));
     }
     
-    Vec2i getSize() const {
+    ivec2 getSize() const {
         return _size;
     }
     
-    Vec3c * getColorbuffer() const {
+    cvec3 * getColorbuffer() const {
         return _colorBuffer;
     }
     
@@ -53,12 +53,12 @@ public:
     }
     
 private:
-    Vec2i _size;
+    ivec2 _size;
     int _length;
     
-    Vec3c _clearColor = Vec3c(255);
+    cvec3 _clearColor = cvec3(255);
     
-    Vec3c *_colorBuffer;
+    cvec3 *_colorBuffer;
     float *_depthBuffer;
 };
 

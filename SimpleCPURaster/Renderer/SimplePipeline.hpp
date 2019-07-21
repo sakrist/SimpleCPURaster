@@ -10,8 +10,8 @@
 #define SimplePipeline_hpp
 
 #include <stdio.h>
-#include "math.h"
-#include "IPipeline.h"
+#include "Math.h"
+#include "PipelineInterface.hpp"
 #include "Resource.hpp"
 
 
@@ -21,27 +21,27 @@ public:
     
     SimplePipeline() {}
     
-    Matrix44f projection;
+    mat4 projection;
     
-    Vec3f _project(const Vec3f& v, Matrix44f _p) {
-        return _p * v;
+    vec3 _project(const vec3& v, mat4 _p) {
+        return _p * vec4(v, 1.0);
     }
     
-    Vec3f position(const Resource *resource, uint32_t index) {
-        const Vec3f v = ((const Vec3f *)(resource->getAttribute(PositionsAttribute, index)))[0];
+    vec3 position(const Resource *resource, uint32_t index) {
+        const vec3 v = ((const vec3 *)(resource->getAttribute(PositionsAttribute, index)))[0];
         return _project(v, projection); 
     }
-    void pixel(const Resource *resource, Vec3f& pixel, const Vec3f& barycentric, const Triangle& triangle) {
+    void pixel(const Resource *resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) {
         
         
-        const Vec3f &n0 = ((const Vec3f *)(resource->getAttribute(NormalsAttribute, triangle.a)))[0];
-        const Vec3f &n1 = ((const Vec3f *)(resource->getAttribute(NormalsAttribute, triangle.b)))[0];
-        const Vec3f &n2 = ((const Vec3f *)(resource->getAttribute(NormalsAttribute, triangle.c)))[0];
+        const vec3 &n0 = ((const vec3 *)(resource->getAttribute(NormalsAttribute, triangle.a)))[0];
+        const vec3 &n1 = ((const vec3 *)(resource->getAttribute(NormalsAttribute, triangle.b)))[0];
+        const vec3 &n2 = ((const vec3 *)(resource->getAttribute(NormalsAttribute, triangle.c)))[0];
 
-        Vec3f normal = cBarycentric(n0, n1, n2, barycentric);
+        vec3 normal = cBarycentric(n0, n1, n2, barycentric);
         
-        Vec3f lightDirection(1.0f);
-        Vec3f color = fmax(normal.dotProduct(lightDirection), 0.0) * 0.56f;
+        vec3 lightDirection(1.0f);
+        vec3 color = vec3(fmax(dot(normal, lightDirection), 0.0) * 0.56f );
         pixel = clamp(color, 0.0, 1.0);
         
     }

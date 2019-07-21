@@ -10,14 +10,14 @@
 #import <GLKit/GLKit.h>
 
 #include "raster.hpp"
-#include "framebuffer.hpp"
+#include "Framebuffer.hpp"
 #include "SimplePipeline.hpp"
 
 @interface NSImage (Framebuffer)
 - (instancetype) initWithFramebuffer:(Framebuffer *)framebuffer;
 @end
 
-void raster(Framebuffer *framebuffer, Matrix44f proj);
+void raster(Framebuffer *framebuffer, mat4 proj);
 
 @implementation ViewController {
     Framebuffer *_frame;
@@ -33,13 +33,13 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     float yaw;
 }
 
-- (Matrix44f)projectionMatrix {
+- (mat4)projectionMatrix {
     float nearZ = 0.1; 
     float farZ = 1000;
     float fovAngle = 65.0f * (M_PI / 180.0f);
     float aspect = fabs(self.view.frame.size.width / self.view.frame.size.height);
      
-    Matrix44f matrix = Matrix44f().perspective(fovAngle, aspect, nearZ, farZ);
+    mat4 matrix = glm::perspective(fovAngle, aspect, nearZ, farZ);
     return matrix;
 }
 
@@ -59,9 +59,11 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
 - (void)viewDidLayout{
     [super viewDidLayout];
     [self resize];
-    Matrix44f projection = [self projectionMatrix];
-    _pipeline->projection = projection * (Matrix44f().translation(0, 0, -30) * (Matrix44f().xRotation(pitch) * Matrix44f().yRotation(yaw)));
-
+    mat4 projection = [self projectionMatrix];
+    mat4 mvp = translate(projection, vec3(0, 0, -30));
+    mvp = glm::rotate(mvp, pitch, vec3(1, 0, 0));
+    mvp = glm::rotate(mvp, yaw, vec3(0, 1, 0));
+    _pipeline->projection = mvp;
     [self draw];
     
 }
@@ -73,7 +75,7 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     }
     
     if (!_frame) {
-        _frame = new Framebuffer(Vec2i(self.view.frame.size.width, self.view.frame.size.height));
+        _frame = new Framebuffer(ivec2(self.view.frame.size.width, self.view.frame.size.height));
     }
     
     if (_raster) {
@@ -109,8 +111,10 @@ void raster(Framebuffer *framebuffer, Matrix44f proj);
     pitch +=  -degreesToRadians(y);
     yaw += degreesToRadians(x);
     
-    Matrix44f projection = [self projectionMatrix];
-    Matrix44f mvp = projection * (Matrix44f().translation(0, 0, -30) * (Matrix44f().xRotation(pitch) * Matrix44f().yRotation(yaw)));
+    mat4 projection = [self projectionMatrix];
+    mat4 mvp = translate(projection, vec3(0, 0, -30));
+    mvp = glm::rotate(mvp, pitch, vec3(1, 0, 0));
+    mvp = glm::rotate(mvp, yaw, vec3(0, 1, 0));
     _pipeline->projection = mvp;
     
     _lastPoint = point;

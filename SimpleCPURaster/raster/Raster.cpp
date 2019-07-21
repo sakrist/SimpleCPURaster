@@ -1,5 +1,5 @@
 //
-//  raster.cpp
+//  Raster.cpp
 //  SimpleCPURaster
 //
 //  Created by Volodymyr Boichentsov on 25/05/2019.
@@ -7,7 +7,7 @@
 //
 
 #include <stdio.h>
-#include "raster.hpp"
+#include "Raster.hpp"
     
 Raster::Raster() {}
 
@@ -29,7 +29,7 @@ void Raster::setPipeline(PipelineInterface *pipeline) {
     p_pipeline = pipeline;
 }
 
-void Raster::_toRasterSpace(Vec3f& vertex) {
+void Raster::_toRasterSpace(vec3& vertex) {
     
     // project onto the screen
     vertex.x /= vertex.z;
@@ -46,7 +46,7 @@ void Raster::draw(Resource *item) {
     assert(p_framebuffer != NULL);
     assert(p_pipeline != NULL);
     
-    Vec3<unsigned char> *frameBuffer = p_framebuffer->getColorbuffer();
+    cvec3 *frameBuffer = p_framebuffer->getColorbuffer();
     float *depthBuffer  = p_framebuffer->getDepthbuffer();
     uint32_t imageWidth = p_framebuffer->getSize().x;
     uint32_t imageHeight = p_framebuffer->getSize().y;
@@ -55,9 +55,9 @@ void Raster::draw(Resource *item) {
 
         Triangle triangle = item->getTriangle(i);
         
-        Vec3f v0Raster = p_pipeline->position(item, triangle.a);
-        Vec3f v1Raster = p_pipeline->position(item, triangle.b);
-        Vec3f v2Raster = p_pipeline->position(item, triangle.c);
+        vec3 v0Raster = p_pipeline->position(item, triangle.a);
+        vec3 v1Raster = p_pipeline->position(item, triangle.b);
+        vec3 v2Raster = p_pipeline->position(item, triangle.c);
         
         _toRasterSpace(v0Raster);
         _toRasterSpace(v1Raster);
@@ -95,34 +95,34 @@ void Raster::draw(Resource *item) {
         // Inner loop 
         for (uint32_t y = y0; y <= y1; ++y) { 
             for (uint32_t x = x0; x <= x1; ++x) { 
-                Vec3f pixelSample(x + 0.5f, y + 0.5f, 0.0f);
-                Vec3f w;
+                vec3 pixelSample(x + 0.5f, y + 0.5f, 0.0f);
+                vec3 w;
                 w[0] = edgeFunction(v1Raster, v2Raster, pixelSample); 
                 w[1] = edgeFunction(v2Raster, v0Raster, pixelSample); 
                 w[2] = edgeFunction(v0Raster, v1Raster, pixelSample); 
                 if (w[0] >= 0.0 && w[1] >= 0.0 && w[2] >= 0.0) {
                     w /= area;
 
-#if defined(__SSE3__)
-                    __m128 v = _mm_mul_ps(_mm_set_ps(v0Raster.z, v1Raster.z, v2Raster.z, 0.0f),
-                                          _mm_set_ps(w[0], w[1], w[2], 0.0f));
-                    v = _mm_hadd_ps(v,v);
-                    v = _mm_hadd_ps(v,v);
-                    float z;
-                    _mm_store_ss(&z, _mm_div_ss(_mm_set_ss(1.0f), v));
-#else
+//#if defined(__SSE3__)
+//                    __m128 v = _mm_mul_ps(_mm_set_ps(v0Raster.z, v1Raster.z, v2Raster.z, 0.0f),
+//                                          _mm_set_ps(w[0], w[1], w[2], 0.0f));
+//                    v = _mm_hadd_ps(v,v);
+//                    v = _mm_hadd_ps(v,v);
+//                    float z;
+//                    _mm_store_ss(&z, _mm_div_ss(_mm_set_ss(1.0f), v));
+//#else
                     float z = 1.0f / (v0Raster.z * w[0] + v1Raster.z * w[1] + v2Raster.z * w[2]); 
-#endif               
+//#endif               
                     // Depth-buffer test 
                     if (z < depthBuffer[y * imageWidth + x]) { 
                         depthBuffer[y * imageWidth + x] = z;
                         
                         pixelSample.z = z;
                         
-                        Vec3f pixelSample(x + 0.5f, y + 0.5f, 0.0f);
+                        vec3 pixelSample(x + 0.5f, y + 0.5f, 0.0f);
                         p_pipeline->pixel(item, pixelSample, w, triangle);
                         
-                        frameBuffer[y * imageWidth + x] = Vec3c(pixelSample.x * 255.0, pixelSample.y * 255.0, pixelSample.z * 255.0);
+                        frameBuffer[y * imageWidth + x] = cvec3(pixelSample.x * 255.0, pixelSample.y * 255.0, pixelSample.z * 255.0);
                     }
                 }
             }

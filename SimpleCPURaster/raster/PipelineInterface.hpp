@@ -1,5 +1,5 @@
 //
-//  IPipeline.h
+//  PipelineInterface.hpp
 //  SimpleCPURaster
 //
 //  Created by Volodymyr Boichentsov on 25/05/2019.
@@ -18,8 +18,8 @@ public:
      Position of vertex
 
      */
-    virtual Vec3f position(const Resource *resource, uint32_t index) = 0;
-    virtual void pixel(const Resource *resource, Vec3f& pixel, const Vec3f& barycentric, const Triangle& triangle) = 0;
+    virtual vec3 position(const Resource *resource, uint32_t index) = 0;
+    virtual void pixel(const Resource *resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) = 0;
 };
 
 

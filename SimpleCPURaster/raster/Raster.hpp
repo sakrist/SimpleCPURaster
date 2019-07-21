@@ -1,5 +1,5 @@
 //
-//  raster.hpp
+//  Raster.hpp
 //  SimpleCPURaster
 //
 //  Created by Volodymyr Boichentsov on 16/04/2019.
@@ -10,8 +10,8 @@
 #define raster_hpp
 
 #include <stdio.h>
-#include "framebuffer.hpp"
-#include "IPipeline.h"
+#include "Framebuffer.hpp"
+#include "PipelineInterface.hpp"
 
 
 
@@ -37,7 +37,7 @@ private:
     
     Framebuffer *p_framebuffer = NULL;
     
-    void _toRasterSpace(Vec3f& vertex);
+    void _toRasterSpace(vec3& vertex);
 };
 
 
