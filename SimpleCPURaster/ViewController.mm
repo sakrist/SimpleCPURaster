@@ -20,9 +20,9 @@
 void raster(Framebuffer *framebuffer, mat4 proj);
 
 @implementation ViewController {
-    Framebuffer *_frame;
-    Raster *_raster;
-    SimplePipeline *_pipeline;
+    std::shared_ptr<Framebuffer> _frame;
+    std::shared_ptr<Raster> _raster;
+    std::shared_ptr<SimplePipeline> _pipeline;
     
     Resource _bunny;
         
@@ -50,8 +50,8 @@ void raster(Framebuffer *framebuffer, mat4 proj);
     [((View *)self.view) activeTrackingArea];
     [self loadBunny];
     
-    _raster = new Raster(); 
-    _pipeline = new SimplePipeline();
+    _raster = std::make_shared<Raster>();
+    _pipeline = std::make_shared<SimplePipeline>();
 
     _raster->setPipeline(_pipeline);
 }
@@ -70,12 +70,11 @@ void raster(Framebuffer *framebuffer, mat4 proj);
 
 - (void)resize {
     if (_frame && !CGSizeEqualToSize(self.view.frame.size, CGSizeMake(_frame->getSize().x, _frame->getSize().y))) {
-        delete _frame;
-        _frame = NULL;
+        _frame = nullptr;
     }
     
     if (!_frame) {
-        _frame = new Framebuffer(ivec2(self.view.frame.size.width, self.view.frame.size.height));
+        _frame = std::make_shared<Framebuffer>(ivec2(self.view.frame.size.width, self.view.frame.size.height));
     }
     
     if (_raster) {
@@ -95,7 +94,7 @@ void raster(Framebuffer *framebuffer, mat4 proj);
 }
 
 - (void)present {
-    NSImage *image = [[NSImage alloc] initWithFramebuffer:_frame];
+    NSImage *image = [[NSImage alloc] initWithFramebuffer:_frame.get()];
     [self.imageView setImage:image];
 }
     
@@ -188,12 +187,15 @@ void raster(Framebuffer *framebuffer, mat4 proj);
 @implementation NSImage (Framebuffer)
 
 - (instancetype)initWithFramebuffer:(Framebuffer *)framebuffer {
+    if (framebuffer == nullptr) {
+        return nil;
+    }
     int width = framebuffer->getSize().x;
     int height = framebuffer->getSize().y;
     int channel = 3;
     
     size_t bufferLength = width * height * channel;
-    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, (void *)framebuffer->getColorbuffer(), bufferLength, NULL);
+    CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, framebuffer->getColorbuffer(), bufferLength, NULL);
     size_t bitsPerComponent = 8;
     size_t bitsPerPixel = bitsPerComponent * channel;
     size_t bytesPerRow = channel * width;

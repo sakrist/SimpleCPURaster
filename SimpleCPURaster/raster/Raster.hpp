@@ -22,20 +22,18 @@ public:
     Raster();
     ~Raster();
     
-    void setFramebuffer(Framebuffer *framebuffer);
+    void setFramebuffer(std::weak_ptr<Framebuffer> framebuffer);
     void clear();
     
-    void setPipeline(PipelineInterface *pipeline);
+    void setPipeline(std::weak_ptr<PipelineInterface> pipeline);
     
     void draw(Resource *item);
         
 private:
-    float p_fimageWidth = 0.0;
-    float p_fimageHeight = 0.0;
+    vec2 _fimageSize{0, 0};
     
-    PipelineInterface *p_pipeline = NULL;
-    
-    Framebuffer *p_framebuffer = NULL;
+    std::weak_ptr<PipelineInterface> _pipeline;
+    std::weak_ptr<Framebuffer> _framebuffer;
     
     void _toRasterSpace(vec3& vertex);
 };

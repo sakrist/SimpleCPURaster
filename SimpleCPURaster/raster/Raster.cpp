@@ -13,20 +13,19 @@ Raster::Raster() {}
 
 Raster::~Raster() {}
 
-void Raster::setFramebuffer(Framebuffer *framebuffer) {
-    p_framebuffer = framebuffer;
-    if (p_framebuffer) {
-        p_fimageWidth = p_framebuffer->getSize().x;
-        p_fimageHeight = p_framebuffer->getSize().y;
+void Raster::setFramebuffer(std::weak_ptr<Framebuffer> framebuffer) {
+    _framebuffer = framebuffer;
+    if (_framebuffer.lock().get() != nullptr) {
+        _fimageSize = _framebuffer.lock()->getSize();
     }
 }
 
 void Raster::clear() {
-    p_framebuffer->clear();
+    _framebuffer.lock()->clear();
 }
 
-void Raster::setPipeline(PipelineInterface *pipeline) {
-    p_pipeline = pipeline;
+void Raster::setPipeline(std::weak_ptr<PipelineInterface> pipeline) {
+    _pipeline = pipeline;
 }
 
 void Raster::_toRasterSpace(vec3& vertex) {
@@ -36,28 +35,30 @@ void Raster::_toRasterSpace(vec3& vertex) {
     vertex.y /= vertex.z; 
     
     // convert from screen space to NDC then raster (in one go)
-    vertex.x = (1.0f + vertex.x) * 0.5f * p_fimageWidth;
-    vertex.y = (1.0f - (1.0f + vertex.y) * 0.5f) * p_fimageHeight; 
+    vertex.x = (1.0f + vertex.x) * 0.5f * _fimageSize.x;
+    vertex.y = (1.0f - (1.0f + vertex.y) * 0.5f) * _fimageSize.y;
     
     vertex.z = 1.0f / vertex.z;        
 }
 
 void Raster::draw(Resource *item) {
-    assert(p_framebuffer != NULL);
-    assert(p_pipeline != NULL);
+    Framebuffer *framebuffer = _framebuffer.lock().get();
+    PipelineInterface *pipeline = _pipeline.lock().get();
+    assert(framebuffer != nullptr);
+    assert(pipeline != nullptr);
     
-    cvec3 *frameBuffer = p_framebuffer->getColorbuffer();
-    float *depthBuffer  = p_framebuffer->getDepthbuffer();
-    uint32_t imageWidth = p_framebuffer->getSize().x;
-    uint32_t imageHeight = p_framebuffer->getSize().y;
+    auto& frameBuffer = framebuffer->_colorBuffer;
+    auto& depthBuffer  = framebuffer->_depthBuffer;
+    uint32_t imageWidth = _fimageSize.x;
+    uint32_t imageHeight = _fimageSize.y;
     
     for (uint32_t i = 0; i < item->primitivesCount(); i++ ) { // TODO: iterator of primitives from  Resource
 
-        Triangle triangle = item->getTriangle(i);
+        const Triangle& triangle = item->getTriangle(i);
         
-        vec3 v0Raster = p_pipeline->position(item, triangle.a);
-        vec3 v1Raster = p_pipeline->position(item, triangle.b);
-        vec3 v2Raster = p_pipeline->position(item, triangle.c);
+        vec3 v0Raster = pipeline->position(item, triangle.a);
+        vec3 v1Raster = pipeline->position(item, triangle.b);
+        vec3 v2Raster = pipeline->position(item, triangle.c);
         
         _toRasterSpace(v0Raster);
         _toRasterSpace(v1Raster);
@@ -76,10 +77,10 @@ void Raster::draw(Resource *item) {
 //        }
         
         // bound box
-        float xmin = min3(v0Raster.x, v1Raster.x, v2Raster.x); 
-        float ymin = min3(v0Raster.y, v1Raster.y, v2Raster.y); 
-        float xmax = max3(v0Raster.x, v1Raster.x, v2Raster.x); 
-        float ymax = max3(v0Raster.y, v1Raster.y, v2Raster.y); 
+        const float& xmin = min3(v0Raster.x, v1Raster.x, v2Raster.x);
+        const float& ymin = min3(v0Raster.y, v1Raster.y, v2Raster.y);
+        const float& xmax = max3(v0Raster.x, v1Raster.x, v2Raster.x);
+        const float& ymax = max3(v0Raster.y, v1Raster.y, v2Raster.y);
         
         // the triangle is out of screen
         if (xmin > imageWidth - 1 || xmax < 0 || ymin > imageHeight - 1 || ymax < 0) continue; 
@@ -111,16 +112,15 @@ void Raster::draw(Resource *item) {
 //                    float z;
 //                    _mm_store_ss(&z, _mm_div_ss(_mm_set_ss(1.0f), v));
 //#else
-                    float z = 1.0f / (v0Raster.z * w[0] + v1Raster.z * w[1] + v2Raster.z * w[2]); 
-//#endif               
-                    // Depth-buffer test 
-                    if (z < depthBuffer[y * imageWidth + x]) { 
-                        depthBuffer[y * imageWidth + x] = z;
-                        
+                    float z = 1.0f / (v0Raster.z * w[0] + v1Raster.z * w[1] + v2Raster.z * w[2]);
+//#endif
+                    // Depth-buffer test
+                    float& depthValue = depthBuffer[y * imageWidth + x];
+                    if (z < depthValue) {
+                        depthValue = z;
                         pixelSample.z = z;
                         
-                        vec3 pixelSample(x + 0.5f, y + 0.5f, 0.0f);
-                        p_pipeline->pixel(item, pixelSample, w, triangle);
+                        pipeline->pixel(item, pixelSample, w, triangle);
                         
                         frameBuffer[y * imageWidth + x] = cvec3(pixelSample.x * 255.0, pixelSample.y * 255.0, pixelSample.z * 255.0);
                     }

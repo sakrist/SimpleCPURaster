@@ -21,7 +21,7 @@ typedef enum : int {
 } PrimitiveType;
 
 struct Triangle {
-    int a,b,c;
+    uint32_t a,b,c;
     Triangle() {};
 };
 
@@ -98,21 +98,15 @@ public:
         _attributes[type].stride = stride;
     }
     
-    const float* getAttribute(AttributeType type, uint32_t index) const {
+    const float* getAttribute(const AttributeType& type, const uint32_t& index) const {
         uint32_t atIndex = _attributes[type].stride * index;
         return _attributesBuffer + atIndex + _attributes[type].offset;
     }
     
-    Triangle getTriangle(uint32_t index) {
+    const Triangle& getTriangle(uint32_t index) {
         assert(index < _indicesCount);
-        
-        Triangle triangle;
-        if (_indices != NULL) {
-            int index_ = index * 3;
-            triangle.a = _indices[index_];
-            triangle.b = _indices[index_+1];
-            triangle.c = _indices[index_+2];
-        }    
+        assert(_indices != NULL);
+        Triangle& triangle = ((Triangle*)(_indices))[index];
         return triangle;
     }
         

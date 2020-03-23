@@ -13,7 +13,7 @@
 #include <immintrin.h>
 #include <stdint.h>
 #endif
-
+#define GLM_FORCE_SWIZZLE
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
@@ -27,17 +27,16 @@ namespace glm
 
 static inline vec3 cBarycentric(const vec3 &a, const vec3 &b, const vec3 &c, const vec3 &w) {
     vec3 result;
-    
 #if defined(__SSE3__)
     
-    float ret[4];
+    vec4 ret;
     _mm_storer_ps(&ret[0], _mm_add_ps(_mm_add_ps(_mm_mul_ps(_mm_set1_ps(w.x), 
                                                             _mm_set_ps(a.x, a.y, a.z, 0.0f)),
                                                  _mm_mul_ps(_mm_set1_ps(w.y), 
                                                             _mm_set_ps(b.x, b.y, b.z, 0.0f))),
                                       _mm_mul_ps(_mm_set1_ps(w.z), 
                                                  _mm_set_ps(c.x, c.y, c.z, 0.0f))));    
-    return vec3(ret[0], ret[1], ret[2]);
+    return ret.xyz();
 #else
     result.x = (fmaf(w.x, a.x, fmaf(w.y, b.x, w.z * c.x)));
     result.y = (fmaf(w.x, a.y, fmaf(w.y, b.y, w.z * c.y)));
@@ -64,15 +63,15 @@ static inline float edgeFunction(const vec3 &a, const vec3 &b, const vec3 &c) {
 }
 
 
-static inline float clamp( float& val, float& minval, float& maxval ) {
+static inline const float& clamp(const float& val,const float& minval,const float& maxval ) {
     return std::min( std::max(val, minval), maxval);
 }    
 
-static inline float min3(float& a, float& b, float& c) {
+static inline const float& min3(const float& a, const float& b, const float& c) {
     return std::min(a, std::min(b, c));
 } 
 
-static inline float max3(float &a, float &b, float &c) {
+static inline const float& max3(const float &a, const float &b, const float &c) {
     return std::max(a, std::max(b, c));
 } 
 

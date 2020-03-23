@@ -10,6 +10,8 @@
 #define Framebuffer_hpp
 
 #include <stdio.h>
+#include <vector>
+#include <string.h>
 #include "Math.h"
 
 class Framebuffer {
@@ -18,48 +20,53 @@ public:
         assert(_size.x > 0);
         assert(_size.y > 0);
         
-        _colorBuffer = new cvec3[_length];
-        _depthBuffer = new float[_length];
+        _colorBuffer.reserve(_length);
+        _depthBuffer.reserve(_length);
         clear();
     }
     
     ~Framebuffer() {
-        delete _colorBuffer;
-        delete _depthBuffer;
+
     }
     
     void clear() {
         int r = ((int *)&_clearColor)[0];
-        memset(_colorBuffer, r, _length * sizeof(cvec3));
+        memset(_colorBuffer.data(), r, _length * sizeof(cvec3));
         float v = MAXFLOAT;
         void *rr = &v;
-        memset_pattern4(_depthBuffer, rr, _length * sizeof(float));
+        memset_pattern4(_depthBuffer.data(), rr, _length * sizeof(float));
     }
     
-    ivec2 getSize() const {
+    const ivec2& getSize() const {
         return _size;
     }
     
-    cvec3 * getColorbuffer() const {
-        return _colorBuffer;
+    const void* getColorbuffer() const {
+        return _colorBuffer.data();
+    }
+
+    const size_t getColorbufferSize() {
+        return _length * sizeof(cvec3);
     }
     
-    void * getColorData() const {
-        return (void *)_colorBuffer;
-    } 
-    
-    float * getDepthbuffer() const {
-        return _depthBuffer;
+    const void* getDepthbuffer() const {
+        return _depthBuffer.data();
+    }
+
+    const size_t getDepthbufferSize() {
+        return _length * sizeof(float);
     }
     
 private:
-    ivec2 _size;
-    int _length;
+    friend class Raster;
+
+    const ivec2 _size;
+    const int _length;
     
     cvec3 _clearColor = cvec3(255);
     
-    cvec3 *_colorBuffer;
-    float *_depthBuffer;
+    std::vector<cvec3> _colorBuffer{};
+    std::vector<float> _depthBuffer{};
 };
 
 #endif /* Framebuffer_hpp */
