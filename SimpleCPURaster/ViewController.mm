@@ -86,7 +86,7 @@ void raster(Framebuffer *framebuffer, mat4 proj);
     
     NSDate *date = [NSDate date];
 
-    _raster->draw(&_bunny);
+    _raster->draw(_bunny);
     
     NSLog(@"draw: %f ms", -1000 * [date timeIntervalSinceNow]);
     

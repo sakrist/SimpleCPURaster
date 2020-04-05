@@ -23,11 +23,12 @@ public:
     ~Raster();
     
     void setFramebuffer(std::weak_ptr<Framebuffer> framebuffer);
-    void clear();
     
     void setPipeline(std::weak_ptr<PipelineInterface> pipeline);
     
-    void draw(Resource *item);
+    void draw(const Resource& item);
+    
+    void clear();
         
 private:
     vec2 _fimageSize{0, 0};

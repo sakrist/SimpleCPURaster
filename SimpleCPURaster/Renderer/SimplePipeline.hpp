@@ -27,16 +27,16 @@ public:
         return _p * vec4(v, 1.0);
     }
     
-    vec3 position(const Resource *resource, const uint32_t& index) override {
-        const vec3& v = ((const vec3 *)(resource->getAttribute(PositionsAttribute, index)))[0];
+    vec3 position(const Resource& resource, const uint32_t& index) override {
+        const vec3& v = ((const vec3 *)(resource.getAttribute(PositionsAttribute, index)))[0];
         return _project(v, projection); 
     }
 
-    void pixel(const Resource *resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) override {
+    void pixel(const Resource& resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) override {
 
-        const vec3& n0 = ((const vec3*)(resource->getAttribute(NormalsAttribute, triangle.a)))[0];
-        const vec3& n1 = ((const vec3*)(resource->getAttribute(NormalsAttribute, triangle.b)))[0];
-        const vec3& n2 = ((const vec3*)(resource->getAttribute(NormalsAttribute, triangle.c)))[0];
+        const vec3& n0 = ((const vec3*)(resource.getAttribute(NormalsAttribute, triangle.a)))[0];
+        const vec3& n1 = ((const vec3*)(resource.getAttribute(NormalsAttribute, triangle.b)))[0];
+        const vec3& n2 = ((const vec3*)(resource.getAttribute(NormalsAttribute, triangle.c)))[0];
 
         vec3 normal = cBarycentric(n0, n1, n2, barycentric);
         

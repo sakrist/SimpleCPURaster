@@ -52,7 +52,7 @@ class Resource {
 public:
     PrimitiveType type = PrimitiveTypeTriangle;
     
-    uint32_t primitivesCount() {
+    uint32_t primitivesCount() const {
         return _indicesCount / 3; 
     }
     
@@ -103,10 +103,10 @@ public:
         return _attributesBuffer + atIndex + _attributes[type].offset;
     }
     
-    const Triangle& getTriangle(uint32_t index) {
+    const Triangle& getTriangle(uint32_t index) const {
         assert(index < _indicesCount);
         assert(_indices != NULL);
-        Triangle& triangle = ((Triangle*)(_indices))[index];
+        const Triangle& triangle = ((Triangle*)(_indices))[index];
         return triangle;
     }
         

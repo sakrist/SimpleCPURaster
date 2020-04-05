@@ -18,8 +18,8 @@ public:
      Position of vertex
 
      */
-    virtual vec3 position(const Resource *resource, const uint32_t& index) = 0;
-    virtual void pixel(const Resource *resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) = 0;
+    virtual vec3 position(const Resource& resource, const uint32_t& index) = 0;
+    virtual void pixel(const Resource& resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) = 0;
 };
 
 

@@ -21,7 +21,9 @@ void Raster::setFramebuffer(std::weak_ptr<Framebuffer> framebuffer) {
 }
 
 void Raster::clear() {
-    _framebuffer.lock()->clear();
+    Framebuffer *framebuffer = _framebuffer.lock().get();
+    assert(framebuffer != nullptr);
+    framebuffer->clear();
 }
 
 void Raster::setPipeline(std::weak_ptr<PipelineInterface> pipeline) {
@@ -41,7 +43,7 @@ void Raster::_toRasterSpace(vec3& vertex) {
     vertex.z = 1.0f / vertex.z;        
 }
 
-void Raster::draw(Resource *item) {
+void Raster::draw(const Resource& item) {
     Framebuffer *framebuffer = _framebuffer.lock().get();
     PipelineInterface *pipeline = _pipeline.lock().get();
     assert(framebuffer != nullptr);
@@ -52,9 +54,9 @@ void Raster::draw(Resource *item) {
     uint32_t imageWidth = _fimageSize.x;
     uint32_t imageHeight = _fimageSize.y;
     
-    for (uint32_t i = 0; i < item->primitivesCount(); i++ ) { // TODO: iterator of primitives from  Resource
+    for (uint32_t i = 0; i < item.primitivesCount(); i++ ) { // TODO: iterator of primitives from  Resource
 
-        const Triangle& triangle = item->getTriangle(i);
+        const Triangle& triangle = item.getTriangle(i);
         
         vec3 v0Raster = pipeline->position(item, triangle.a);
         vec3 v1Raster = pipeline->position(item, triangle.b);
