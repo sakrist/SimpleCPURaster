@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 typedef enum : int {
     PrimitiveTypeTriangle = 0
@@ -52,8 +53,8 @@ class Resource {
 public:
     PrimitiveType type = PrimitiveTypeTriangle;
     
-    uint32_t primitivesCount() const {
-        return _indicesCount / 3; 
+    size_t primitivesCount() const {
+        return _indices.size();
     }
     
     void setIndices(uint32_t indicesCount, uint32_t *indicesBuffer) {
@@ -64,30 +65,27 @@ public:
         assert(sizeBytes != UINT32_MAX);
         assert(indicesBuffer != NULL);
         
-        _indicesCount = indicesCount;
-        if (_indices != NULL) {
-            free(_indices);
-            _indices = NULL; 
+        if (_indices.size() != 0) {
+            _indices.clear();
         }
-        
-        _indices = (uint32_t *)malloc(sizeBytes);
-        memcpy(_indices, indicesBuffer, sizeBytes);
+
+        Triangle *tris = (Triangle *)indicesBuffer;
+        std::copy(tris, tris + indicesCount/3, std::back_inserter(_indices));
     }
-    
-    void setAttributesBuffer(float *buffer, uint32_t size) {
-        size_t sizeBytes = sizeof(float) * size;
-        assert(sizeBytes != 0);
-        assert(sizeBytes != UINT32_MAX);
+
+    /// Set mesh attributes data to resource where vertices are in float format.
+    /// @param buffer pointer on data with float values
+    /// @param sizeElements number of float elements
+    void setAttributesBuffer(float *buffer, uint32_t sizeElements) {
+        assert(sizeElements != 0);
+        assert(sizeElements != UINT32_MAX);
         assert(buffer != NULL);
         
-        if (_attributesBuffer != NULL) {
-            free(_attributesBuffer);
-            _attributesBuffer = NULL;
+        if (_attributesBuffer.size() != 0) {
+            _attributesBuffer.clear();
         }
-        
-        _attributesBuffer = (float *)malloc(sizeBytes);
-        memcpy(_attributesBuffer, buffer, sizeBytes);
-        _attributesBufferSize = size;
+
+        std::copy(buffer, buffer + sizeElements, std::back_inserter(_attributesBuffer));
     }
     
     void setAttribute(AttributeType type, uint32_t stride, uint32_t offset = 0) {
@@ -97,26 +95,22 @@ public:
         _attributes[type].offset = offset;
         _attributes[type].stride = stride;
     }
-    
-    const float* getAttribute(const AttributeType& type, const uint32_t& index) const {
-        uint32_t atIndex = _attributes[type].stride * index;
-        return _attributesBuffer + atIndex + _attributes[type].offset;
+
+    template <typename T>
+    const T& getAttribute(const AttributeType& type, const uint32_t& index) const {
+        uint32_t atIndex = _attributes[type].stride * index + _attributes[type].offset;
+        return ((const T* )&_attributesBuffer[atIndex])[0];
     }
     
     const Triangle& getTriangle(uint32_t index) const {
-        assert(index < _indicesCount);
-        assert(_indices != NULL);
-        const Triangle& triangle = ((Triangle*)(_indices))[index];
-        return triangle;
+        assert(index < _indices.size());
+        return _indices[index];
     }
         
 private:
     Attribute _attributes[10];
-    uint32_t _indicesCount = 0;
-    uint32_t* _indices = NULL;
-    
-    uint32_t _attributesBufferSize = 0;
-    float* _attributesBuffer = NULL;
+    std::vector<Triangle> _indices;
+    std::vector<float> _attributesBuffer;
 };
 
 #endif /* Resource_hpp */

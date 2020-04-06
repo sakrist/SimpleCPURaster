@@ -28,15 +28,15 @@ public:
     }
     
     vec3 position(const Resource& resource, const uint32_t& index) override {
-        const vec3& v = ((const vec3 *)(resource.getAttribute(PositionsAttribute, index)))[0];
+        const vec3& v = resource.getAttribute<vec3>(PositionsAttribute, index);
         return _project(v, projection); 
     }
 
     void pixel(const Resource& resource, vec3& pixel, const vec3& barycentric, const Triangle& triangle) override {
 
-        const vec3& n0 = ((const vec3*)(resource.getAttribute(NormalsAttribute, triangle.a)))[0];
-        const vec3& n1 = ((const vec3*)(resource.getAttribute(NormalsAttribute, triangle.b)))[0];
-        const vec3& n2 = ((const vec3*)(resource.getAttribute(NormalsAttribute, triangle.c)))[0];
+        const vec3& n0 = resource.getAttribute<vec3>(NormalsAttribute, triangle.a);
+        const vec3& n1 = resource.getAttribute<vec3>(NormalsAttribute, triangle.b);
+        const vec3& n2 = resource.getAttribute<vec3>(NormalsAttribute, triangle.c);
 
         vec3 normal = cBarycentric(n0, n1, n2, barycentric);
         
