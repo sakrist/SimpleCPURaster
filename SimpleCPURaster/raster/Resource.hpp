@@ -97,7 +97,7 @@ public:
     }
 
     template <typename T>
-    const T& getAttribute(const AttributeType& type, const uint32_t& index) const {
+    const T& getAttribute(AttributeType type, uint32_t index) const {
         uint32_t atIndex = _attributes[type].stride * index + _attributes[type].offset;
         return ((const T* )&_attributesBuffer[atIndex])[0];
     }

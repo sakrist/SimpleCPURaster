@@ -45,7 +45,8 @@ static inline vec3 cBarycentric(const vec3 &a, const vec3 &b, const vec3 &c, con
     return result;
 }
 
-static inline float degreesToRadians(float degrees) {
+template <typename T>
+static inline T degreesToRadians(T degrees) {
     return degrees * (M_PI / 180.0);
 }
 
@@ -62,21 +63,18 @@ static inline float edgeFunction(const vec3 &a, const vec3 &b, const vec3 &c) {
 #endif
 }
 
-
-static inline const float& clamp(const float& val,const float& minval,const float& maxval ) {
-    return std::min( std::max(val, minval), maxval);
-}    
-
-static inline const float& min3(const float& a, const float& b, const float& c) {
+template <typename T>
+static inline const T min3(const T a, const T b, const T c) {
     return std::min(a, std::min(b, c));
 } 
 
-static inline const float& max3(const float &a, const float &b, const float &c) {
+template <typename T>
+static inline const T max3(const T a, const T b, const T c) {
     return std::max(a, std::max(b, c));
 } 
 
 
-static inline vec3 clamp(  vec3& val, float minval, float maxval ) {
+static inline vec3 clamp(const vec3& val, float minval, float maxval ) {
     return vec3(clamp(val.x, minval, maxval), clamp(val.y, minval, maxval), clamp(val.z, minval, maxval));
 }
 

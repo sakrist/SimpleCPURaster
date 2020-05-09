@@ -14,10 +14,7 @@
 		D23095972261FCDC00A657C3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D23095952261FCDC00A657C3 /* Main.storyboard */; };
 		D230959A2261FCDC00A657C3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = D23095992261FCDC00A657C3 /* main.m */; };
 		D273020A2299DFD300A443D5 /* bunny.bin in Resources */ = {isa = PBXBuildFile; fileRef = D27302092299DFD300A443D5 /* bunny.bin */; };
-		D273020C2299E47600A443D5 /* Raster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D273020B2299E47600A443D5 /* Raster.cpp */; };
-		D2B2F37B22AB0D8B00D273D6 /* Resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2B2F37922AB0D8B00D273D6 /* Resource.cpp */; };
 		D2D7F4AF22A5CD1F00265EA1 /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D7F4AE22A5CD1F00265EA1 /* View.m */; };
-		D2DBF10D229AF7F200B9CF7F /* SimplePipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2DBF10B229AF7F200B9CF7F /* SimplePipeline.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,14 +33,11 @@
 		D23095A7226205B500A657C3 /* Framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Framebuffer.hpp; sourceTree = "<group>"; };
 		D23095B42265DE5A00A657C3 /* Raster.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Raster.hpp; sourceTree = "<group>"; };
 		D27302092299DFD300A443D5 /* bunny.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = bunny.bin; sourceTree = SOURCE_ROOT; };
-		D273020B2299E47600A443D5 /* Raster.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Raster.cpp; sourceTree = "<group>"; };
 		D273020D2299EFA000A443D5 /* PipelineInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PipelineInterface.hpp; sourceTree = "<group>"; };
-		D2B2F37922AB0D8B00D273D6 /* Resource.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Resource.cpp; sourceTree = "<group>"; };
 		D2B2F37A22AB0D8B00D273D6 /* Resource.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Resource.hpp; sourceTree = "<group>"; };
+		D2B620632466C1BB0005E76E /* SimplePipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimplePipeline.hpp; sourceTree = "<group>"; };
 		D2D7F4AD22A5CD1F00265EA1 /* View.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = "<group>"; };
 		D2D7F4AE22A5CD1F00265EA1 /* View.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
-		D2DBF10B229AF7F200B9CF7F /* SimplePipeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimplePipeline.cpp; sourceTree = "<group>"; };
-		D2DBF10C229AF7F200B9CF7F /* SimplePipeline.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimplePipeline.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,7 +86,6 @@
 				D23095912261FCDB00A657C3 /* ViewController.mm */,
 				D2D7F4AD22A5CD1F00265EA1 /* View.h */,
 				D2D7F4AE22A5CD1F00265EA1 /* View.m */,
-				D2DBF10A229AF7F200B9CF7F /* Renderer */,
 				D27302092299DFD300A443D5 /* bunny.bin */,
 				D23095A12261FCFB00A657C3 /* raster */,
 				D23095932261FCDC00A657C3 /* Assets.xcassets */,
@@ -108,23 +101,13 @@
 			isa = PBXGroup;
 			children = (
 				D23095A7226205B500A657C3 /* Framebuffer.hpp */,
-				D2B2F37922AB0D8B00D273D6 /* Resource.cpp */,
-				D2B2F37A22AB0D8B00D273D6 /* Resource.hpp */,
+				D23095A42261FCFB00A657C3 /* Math.h */,
 				D273020D2299EFA000A443D5 /* PipelineInterface.hpp */,
 				D23095B42265DE5A00A657C3 /* Raster.hpp */,
-				D273020B2299E47600A443D5 /* Raster.cpp */,
-				D23095A42261FCFB00A657C3 /* Math.h */,
+				D2B2F37A22AB0D8B00D273D6 /* Resource.hpp */,
+				D2B620632466C1BB0005E76E /* SimplePipeline.hpp */,
 			);
 			path = raster;
-			sourceTree = "<group>";
-		};
-		D2DBF10A229AF7F200B9CF7F /* Renderer */ = {
-			isa = PBXGroup;
-			children = (
-				D2DBF10B229AF7F200B9CF7F /* SimplePipeline.cpp */,
-				D2DBF10C229AF7F200B9CF7F /* SimplePipeline.hpp */,
-			);
-			path = Renderer;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -197,13 +180,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D273020C2299E47600A443D5 /* Raster.cpp in Sources */,
 				D23095922261FCDB00A657C3 /* ViewController.mm in Sources */,
 				D2D7F4AF22A5CD1F00265EA1 /* View.m in Sources */,
 				D230959A2261FCDC00A657C3 /* main.m in Sources */,
-				D2B2F37B22AB0D8B00D273D6 /* Resource.cpp in Sources */,
 				D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */,
-				D2DBF10D229AF7F200B9CF7F /* SimplePipeline.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
