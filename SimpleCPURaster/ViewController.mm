@@ -137,45 +137,51 @@ void raster(Framebuffer *framebuffer, mat4 proj);
 - (void)loadBunny {
     NSData *data = [NSData dataWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"bunny" ofType:@"bin"]];
     
+    const char *bytes = (const char *)data.bytes;
+    size_t length = data.length;
+    
     int bytesOffset = 0;
     
-    GLKVector3 min_vec;
-    [data getBytes:&min_vec range:NSMakeRange(bytesOffset, 4*3)];
+    glm::vec3 min_vec;
+    std::memcpy(&min_vec, bytes + bytesOffset, sizeof(min_vec));
     bytesOffset += sizeof(min_vec);
-    GLKVector3 max_vec;
-    [data getBytes:&max_vec range:NSMakeRange(bytesOffset, 4*3)];
+    
+    glm::vec3 max_vec;
+    std::memcpy(&max_vec, bytes + bytesOffset, sizeof(max_vec));
     bytesOffset += sizeof(max_vec);
     
     // getting center
-    GLKVector3 center = GLKVector3MultiplyScalar(GLKVector3Add(max_vec, min_vec), 0.5);
+    glm::vec3 center = (max_vec + min_vec) * glm::vec3(0.5);
     
     int icount = 0;
-    [data getBytes:&icount range:NSMakeRange(bytesOffset, 4)];
-    bytesOffset += 4;
+    std::memcpy(&icount, bytes + bytesOffset, sizeof(icount));
+    bytesOffset += sizeof(icount);
         
     NSLog(@"indices count %d", icount);
-    NSMutableData *indicesData = [NSMutableData dataWithData:[data subdataWithRange:NSMakeRange(bytesOffset,  sizeof(GLuint) * icount)]];
+    const void *indicesData = bytes + bytesOffset;
     
-    bytesOffset += sizeof(GLuint) * icount;
+    bytesOffset += sizeof(uint32_t) * icount;
     
     int vcount = 0;
-    [data getBytes:&vcount range:NSMakeRange(bytesOffset, 4)];
-    bytesOffset += 4;
+    std::memcpy(&vcount, bytes + bytesOffset, sizeof(vcount));
+    bytesOffset += sizeof(vcount);
     
-    NSMutableData *verticesData = [NSMutableData dataWithData:[data subdataWithRange:NSMakeRange(bytesOffset, vcount*(3+3)*4)]];
+    const void *vertices = bytes + bytesOffset;
     
-    bytesOffset += vcount*(3+3)*4; // end
+    // 3 position + 3 normal 
+    size_t verticesSize = vcount*(3+3);
+    
     
     NSLog(@"vertices count %d", vcount);
     
-    GLKVector3 *v = (GLKVector3*)[verticesData mutableBytes];
+    glm::vec3 *v = (glm::vec3 *)vertices;
     int all_vn = vcount*2;
     for (int i = 0; i < all_vn; i += 2) {
-        v[i] = GLKVector3MultiplyScalar(GLKVector3Subtract(v[i], center), 0.05);
+        v[i] = (v[i] - center) * glm::vec3(0.05);
     }
     
-    _bunny.setIndices(icount, (uint32_t *)indicesData.bytes);
-    _bunny.setAttributesBuffer((float *)verticesData.bytes, (uint32_t)verticesData.length/sizeof(float));
+    _bunny.setIndices(icount, (uint32_t *)indicesData);
+    _bunny.setAttributesBuffer((float *)vertices, (uint32_t)verticesSize);
     _bunny.setAttribute(PositionsAttribute, 6);
     _bunny.setAttribute(NormalsAttribute, 6, 3);
     

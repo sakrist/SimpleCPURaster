@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		D20615032278D913000B5FB8 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D20615022278D913000B5FB8 /* GLKit.framework */; };
 		D230958F2261FCDB00A657C3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D230958E2261FCDB00A657C3 /* AppDelegate.m */; };
 		D23095922261FCDB00A657C3 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = D23095912261FCDB00A657C3 /* ViewController.mm */; };
 		D23095942261FCDC00A657C3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D23095932261FCDC00A657C3 /* Assets.xcassets */; };
@@ -29,13 +28,13 @@
 		D23095982261FCDC00A657C3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D23095992261FCDC00A657C3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		D230959B2261FCDC00A657C3 /* CPURaster.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CPURaster.entitlements; sourceTree = "<group>"; };
-		D23095A42261FCFB00A657C3 /* Math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math.h; sourceTree = "<group>"; };
-		D23095A7226205B500A657C3 /* Framebuffer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Framebuffer.hpp; sourceTree = "<group>"; };
-		D23095B42265DE5A00A657C3 /* Raster.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Raster.hpp; sourceTree = "<group>"; };
 		D27302092299DFD300A443D5 /* bunny.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = bunny.bin; sourceTree = SOURCE_ROOT; };
-		D273020D2299EFA000A443D5 /* PipelineInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PipelineInterface.hpp; sourceTree = "<group>"; };
-		D2B2F37A22AB0D8B00D273D6 /* Resource.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Resource.hpp; sourceTree = "<group>"; };
-		D2B620632466C1BB0005E76E /* SimplePipeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SimplePipeline.hpp; sourceTree = "<group>"; };
+		D2B6206524705DAD0005E76E /* PipelineInterface.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = PipelineInterface.hpp; sourceTree = "<group>"; };
+		D2B6206624705DAD0005E76E /* Raster.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Raster.hpp; sourceTree = "<group>"; };
+		D2B6206724705DAD0005E76E /* SimplePipeline.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimplePipeline.hpp; sourceTree = "<group>"; };
+		D2B6206824705DAD0005E76E /* Framebuffer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Framebuffer.hpp; sourceTree = "<group>"; };
+		D2B6206924705DAD0005E76E /* Math.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Math.h; sourceTree = "<group>"; };
+		D2B6206A24705DAD0005E76E /* Resource.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Resource.hpp; sourceTree = "<group>"; };
 		D2D7F4AD22A5CD1F00265EA1 /* View.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = "<group>"; };
 		D2D7F4AE22A5CD1F00265EA1 /* View.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -45,7 +44,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D20615032278D913000B5FB8 /* GLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,8 +84,8 @@
 				D23095912261FCDB00A657C3 /* ViewController.mm */,
 				D2D7F4AD22A5CD1F00265EA1 /* View.h */,
 				D2D7F4AE22A5CD1F00265EA1 /* View.m */,
+				D2B6206424705DAD0005E76E /* raster */,
 				D27302092299DFD300A443D5 /* bunny.bin */,
-				D23095A12261FCFB00A657C3 /* raster */,
 				D23095932261FCDC00A657C3 /* Assets.xcassets */,
 				D23095952261FCDC00A657C3 /* Main.storyboard */,
 				D23095982261FCDC00A657C3 /* Info.plist */,
@@ -97,18 +95,18 @@
 			path = SimpleCPURaster;
 			sourceTree = "<group>";
 		};
-		D23095A12261FCFB00A657C3 /* raster */ = {
+		D2B6206424705DAD0005E76E /* raster */ = {
 			isa = PBXGroup;
 			children = (
-				D23095A7226205B500A657C3 /* Framebuffer.hpp */,
-				D23095A42261FCFB00A657C3 /* Math.h */,
-				D273020D2299EFA000A443D5 /* PipelineInterface.hpp */,
-				D23095B42265DE5A00A657C3 /* Raster.hpp */,
-				D2B2F37A22AB0D8B00D273D6 /* Resource.hpp */,
-				D2B620632466C1BB0005E76E /* SimplePipeline.hpp */,
+				D2B6206524705DAD0005E76E /* PipelineInterface.hpp */,
+				D2B6206624705DAD0005E76E /* Raster.hpp */,
+				D2B6206724705DAD0005E76E /* SimplePipeline.hpp */,
+				D2B6206824705DAD0005E76E /* Framebuffer.hpp */,
+				D2B6206924705DAD0005E76E /* Math.h */,
+				D2B6206A24705DAD0005E76E /* Resource.hpp */,
 			);
 			path = raster;
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
